@@ -28,6 +28,29 @@ src/wasm_table.o: src/wasm_table.c
 %.o: %.c $(wildcard src/*.h) src/_deduplicate.c
 	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ $(NOT_S_FLAGS)
 
+test-emcc: \
+	dist/include/hiwire.h \
+	dist/lib/libhiwire.a
+
+	emcc -I dist/include -c tests/testlib.c -o tests/testlib.o -mreference-types -fPIC
+
+	emcc -I dist/include -c tests/test_basic.c -o tests/test_basic.o -mreference-types -fPIC
+	emcc -L dist/lib -lhiwire tests/test_basic.o tests/testlib.o -o tests/test_basic.js -sMAIN_MODULE
+	node tests/test_basic.js
+
+	# emcc -I dist/include -c tests/test_many_refs.c -o tests/test_many_refs.o -mreference-types -fPIC
+	# emcc -L dist/lib -lhiwire tests/test_many_refs.o tests/testlib.o -o tests/test_many_refs.js -sMAIN_MODULE
+	# node tests/test_many_refs.js
+
+	emcc -I dist/include -c tests/test_deduplication.c -o tests/test_deduplication.o -mreference-types -fPIC
+	emcc -L dist/lib -lhiwire tests/test_deduplication.o tests/testlib.o -o tests/test_deduplication.js -sMAIN_MODULE
+	node tests/test_deduplication.js
+
+	emcc -I dist/include -c tests/test_versions.c -o tests/test_versions.o -mreference-types -fPIC
+	emcc -L dist/lib -lhiwire tests/test_versions.o tests/testlib.o -o tests/test_versions.js -sMAIN_MODULE
+	node tests/test_versions.js
+
+
 
 clean:
 	rm -f src/*.o

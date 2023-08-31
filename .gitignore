@@ -1,3 +1,5 @@
 *.o
+*.js
+*.wasm
 dist
 .vscode
