@@ -1,6 +1,7 @@
 #include "hiwire.h"
 #include "stdalign.h"
 
+#define CAN_DEDUPLICATE _HIWIRE_CAN_DEDUPLICATE
 #define ALLOC_INCREMENT 1024
 
 #include "compat.c"

@@ -8,11 +8,19 @@ endif
 
 LDFLAGS=$(DBGFLAGS) $(OPTFLAGS)
 
-dist/libhiwire.a: \
+all: \
+	dist/include/hiwire.h	\
+	dist/lib/libhiwire.a
+
+dist/include/hiwire.h: src/hiwire.h
+	mkdir -p dist/include
+	cp $< $@
+
+dist/lib/libhiwire.a: \
   src/wasm_table.o \
   src/hiwire.o
+	mkdir -p dist/lib
 	$(AR) rcs $@ $(filter %.o,$^)
-
 
 dist/blah.js: \
   dist/libhiwire.a \
@@ -25,9 +33,9 @@ src/wasm_table.o: src/wasm_table.s
 # Emscripten knows to insert -g0 but clang doesn't.
 	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ -g0
 
-
 %.o: %.c $(wildcard src/*.h) src/_deduplicate.c
 	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ $(NOT_S_FLAGS)
 
 clean:
 	rm -f src/*.o
+	rm -rf dist
