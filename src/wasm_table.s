@@ -8,13 +8,6 @@ _hiwire_immortal_table:
   .tabletype _hiwire_immortal_table, externref
 
 
-.globl _hiwire_ref_null
-_hiwire_ref_null:
-  .functype _hiwire_ref_null () -> (externref)
-  ref.null_extern
-  end_function
-
-
 .globl _hiwire_immortal_get
 _hiwire_immortal_get:
   .functype _hiwire_immortal_get (i32) -> (externref)

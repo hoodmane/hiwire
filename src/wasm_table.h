@@ -3,8 +3,6 @@
 #endif
 #include "hiwire.h"
 
-__externref_t _hiwire_ref_null(void);
-
 __externref_t _hiwire_immortal_get(int);
 int _hiwire_immortal_add(__externref_t);
 

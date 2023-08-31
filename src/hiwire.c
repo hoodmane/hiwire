@@ -13,7 +13,7 @@ _Static_assert(sizeof(JsRef) == sizeof(int),
 #include "wasm_table.h"
 
 #define TRACEREFS(...)
-#define FAIL_INVALID_ID() printf("Fail!!\n")
+#define FAIL_INVALID_ID(ref) // printf("Fail!!\n")
 
 // JsRefs are:
 // * heap             if they are odd,
@@ -183,8 +183,8 @@ _hiwire_num_keys(void) {
 __externref_t 
 hiwire_get_value(JsRef ref) {
   if (!ref) {
-    printf("failed! %s %d\n", __FILE__, __LINE__);
-    return _hiwire_ref_null();
+    FAIL_INVALID_ID(ref);
+    return __builtin_wasm_ref_null_extern();
   }
   if (IS_IMMORTAL(ref)) {
     return _hiwire_immortal_get(IMMORTAL_REF_TO_INDEX(ref));
@@ -192,8 +192,8 @@ hiwire_get_value(JsRef ref) {
   int index = HEAP_REF_TO_INDEX(ref);
   int info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
-    FAIL_INVALID_ID();
-    return _hiwire_ref_null();
+    FAIL_INVALID_ID(ref);
+    return __builtin_wasm_ref_null_extern();
   }
   return _hiwire_get(index);
 };
@@ -208,7 +208,7 @@ hiwire_incref (JsRef ref) {
   TRACEREFS("hw.incref", index, ref, _hiwire.objects[index]);
   int info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
-    FAIL_INVALID_ID();
+    FAIL_INVALID_ID(ref);
     return;
   }
   HEAP_INCREF(_hiwire.slotInfo[index]);
@@ -222,7 +222,7 @@ void hiwire_decref(JsRef ref) {
   int index = HEAP_REF_TO_INDEX(ref);
   int info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
-    FAIL_INVALID_ID();
+    FAIL_INVALID_ID(ref);
     return;
   }
   HEAP_DECREF(info);
