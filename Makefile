@@ -22,19 +22,12 @@ dist/lib/libhiwire.a: \
 	mkdir -p dist/lib
 	$(AR) rcs $@ $(filter %.o,$^)
 
-dist/blah.js: \
-  dist/libhiwire.a \
-  src/main.o
-	$(CC) -o $@ $^ $(LDFLAGS)
-	node dist/blah.js
-
-src/wasm_table.o: src/wasm_table.s
-# This needs to be built with -g0 or bad things happen.
-# Emscripten knows to insert -g0 but clang doesn't.
-	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ -g0
+src/wasm_table.o: src/wasm_table.c
+	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ -fno-PIC
 
 %.o: %.c $(wildcard src/*.h) src/_deduplicate.c
 	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ $(NOT_S_FLAGS)
+
 
 clean:
 	rm -f src/*.o
