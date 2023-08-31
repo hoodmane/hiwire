@@ -1,18 +1,33 @@
-CFLAGS+= -fPIC -mreference-types -Werror=int-conversion -Werror=incompatible-pointer-types -g2
-LDFLAGS=-g2
+OPTFLAGS ?= -O2
+DBGFLAGS?=-g3
+CFLAGS+= -fPIC -mreference-types -Werror=int-conversion -Werror=incompatible-pointer-types $(DBGFLAGS) $(OPTFLAGS)
+ifdef HIWIRE_STATIC_PAGES
+	# Passing this when compiling .s leads to a warning...
+	NOT_S_FLAGS = -DHIWIRE_STATIC_PAGES=$(HIWIRE_STATIC_PAGES)
+endif
+
+LDFLAGS=$(DBGFLAGS) $(OPTFLAGS)
+
+dist/libhiwire.a: \
+  src/wasm_table.o \
+  src/hiwire.o
+	$(AR) rcs $@ $(filter %.o,$^)
 
 
 dist/blah.js: \
-  src/wasm_table.o \
-  src/hiwire.o \
+  dist/libhiwire.a \
   src/main.o
-	$(CC) -o $@ $(filter %.o,$^) $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 	node dist/blah.js
 
 src/wasm_table.o: src/wasm_table.s
-	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/
+# This needs to be built with -g0 or bad things happen.
+# Emscripten knows to insert -g0 but clang doesn't.
+	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ -g0
 
 
 %.o: %.c $(wildcard src/*.h) src/_deduplicate.c
-	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/
+	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ $(NOT_S_FLAGS)
 
+clean:
+	rm -f src/*.o

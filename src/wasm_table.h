@@ -1,4 +1,4 @@
-#ifndef HIwIRE_INTERNAL
+#ifndef HIWIRE_INTERNAL
 #error "private header"
 #endif
 #include "hiwire.h"

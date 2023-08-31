@@ -1,15 +1,17 @@
 #include "hiwire.h"
-#include "stdlib.h"
-#include "string.h"
-#include "stdio.h"
 #include "stdalign.h"
+
+#define ALLOC_INCREMENT 1024
+
+#include "compat.c"
+
 
 _Static_assert(alignof(JsRef) == alignof(int),
                "JsRef should have the same alignment as int.");
 _Static_assert(sizeof(JsRef) == sizeof(int),
                "JsRef should have the same size as int.");
 
-#define HIwIRE_INTERNAL
+#define HIWIRE_INTERNAL
 #include "wasm_table.h"
 
 #define TRACEREFS(...)
@@ -143,6 +145,7 @@ hiwire_intern(__externref_t value) {
   #endif
   return result;
 }
+#include "stdio.h"
 
 JsRef
 hiwire_new_value(__externref_t value) {
@@ -150,14 +153,17 @@ hiwire_new_value(__externref_t value) {
   if (_hiwire.slotInfoSize == 0) {
     _hiwire_table_init();
   }
-  if (index >= _hiwire.slotInfoSize) {
-    int* newSlotInfo = realloc(_hiwire.slotInfo, _hiwire.slotInfoSize + 1024);
+  int needed_size = sizeof(int[index + 1]);
+  int orig_size = sizeof(int[_hiwire.slotInfoSize]);
+  if (needed_size > orig_size) {
+    int new_size = sizeof(int[_hiwire.slotInfoSize + ALLOC_INCREMENT]);
+    int* newSlotInfo = _hiwire_realloc(_hiwire.slotInfo, new_size);
     if (!newSlotInfo) {
       // TODO: fatal?
       return NULL;
     }
-    memset(newSlotInfo + _hiwire.slotInfoSize, 0, 1024);
-    _hiwire.slotInfoSize += 1024;
+    memset(((char*)newSlotInfo) + orig_size, 0, new_size - orig_size);
+    _hiwire.slotInfoSize += ALLOC_INCREMENT;
     _hiwire.slotInfo = newSlotInfo;
   }
   _hiwire.numKeys ++;
