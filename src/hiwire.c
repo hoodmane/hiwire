@@ -9,12 +9,6 @@
 
 #include "compat.c"
 
-
-_Static_assert(alignof(HwRef) == alignof(int),
-               "HwRef should have the same alignment as int.");
-_Static_assert(sizeof(HwRef) == sizeof(int),
-               "HwRef should have the same size as int.");
-
 #define HIWIRE_INTERNAL
 #include "hiwire_macros.h"
 #include "wasm_table.h"

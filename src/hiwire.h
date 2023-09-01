@@ -14,6 +14,9 @@
 #if defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) && defined(HIWIRE_EXTERN_DEDUPLICATE)
 #error "only define one of HIWIRE_EMSCRIPTEN_DEDUPLICATE or HIWIRE_EXTERN_DEDUPLICATE"
 #endif
+#if defined(HIWIRE_STATIC_PAGES) && defined(HIWIRE_EXTERN_REALLOC)
+#error "only define one of HIWIRE_STATIC_PAGES or HIWIRE_EXTERN_REALLOC"
+#endif
 
 /**
  * hiwire: A super-simple framework for converting values between C and
@@ -33,9 +36,14 @@
 // alignof(HwRef) = alignof(int) = 4 and
 // sizeof(HwRef) = sizeof(int) = 4
 //
-// To be future proof, we have _Static_asserts for this in hiwire.c.
+// To be future proof, we have _Static_asserts for this.
 struct _HwRefStruct
 {};
+
+_Static_assert(alignof(HwRef) == alignof(int),
+               "HwRef should have the same alignment as int.");
+_Static_assert(sizeof(HwRef) == sizeof(int),
+               "HwRef should have the same size as int.");
 
 typedef struct _HwRefStruct* HwRef;
 
