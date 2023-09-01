@@ -38,9 +38,9 @@ test-emcc: \
 	emcc -L dist/lib -lhiwire tests/test_basic.o tests/testlib.o -o tests/test_basic.js -sMAIN_MODULE
 	node tests/test_basic.js
 
-	# emcc -I dist/include -c tests/test_many_refs.c -o tests/test_many_refs.o -mreference-types -fPIC
-	# emcc -L dist/lib -lhiwire tests/test_many_refs.o tests/testlib.o -o tests/test_many_refs.js -sMAIN_MODULE
-	# node tests/test_many_refs.js
+	emcc -I dist/include -c tests/test_many_refs.c -o tests/test_many_refs.o -mreference-types -fPIC
+	emcc -L dist/lib -lhiwire tests/test_many_refs.o tests/testlib.o -o tests/test_many_refs.js -sMAIN_MODULE
+	node tests/test_many_refs.js
 
 	emcc -DHIWIRE_EMSCRIPTEN_DEDUPLICATE -I dist/include -c tests/test_deduplication.c -o tests/test_deduplication.o -mreference-types -fPIC
 	emcc -L dist/lib -lhiwire tests/test_deduplication.o tests/testlib.o -o tests/test_deduplication.js -sMAIN_MODULE
@@ -55,3 +55,4 @@ test-emcc: \
 clean:
 	rm -f src/*.o
 	rm -rf dist
+	rm -rf tests/*.{js,wasm,o}

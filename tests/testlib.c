@@ -1,5 +1,6 @@
 #include "testlib.h"
 
+// clang-format off
 EM_JS(__externref_t, int_to_ref, (int x), {
     return x;
 })
@@ -15,4 +16,4 @@ EM_JS(int, ref_to_int, (__externref_t x), {
 EM_JS(int, is_null, (__externref_t x), {
     return x == null;
 })
-
+// clang-format on
