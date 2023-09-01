@@ -1,15 +1,16 @@
 
-#if __has_include("string.h")
-#include "string.h"
+#if __has_include("stdlib.h")
+#include "stdlib.h"
 #else
 
 typedef unsigned long size_t;
 #define NULL ((void*)(0))
-// memset is an intrinsic so it works fine even in wasm32-unknown-unknown
-void *memset(void*, int, size_t);
 // we'll need a definition of realloc!
 void* realloc(void* orig, size_t sz);
 #endif
+// memset is an intrinsic so it works fine even in wasm32-unknown-unknown
+void *memset(void*, int, size_t);
+
 
 #if defined(HIWIRE_STATIC_PAGES)
 // provide a static realloc on request
@@ -20,6 +21,8 @@ static inline void* _hiwire_realloc(void* orig, size_t sz) {
   }
   return 0;
 }
+#elif defined(HIWIRE_EXTERN_REALLOC)
+#define _hiwire_realloc hiwire_realloc
 #else
 #define _hiwire_realloc realloc
 #endif
