@@ -4,6 +4,9 @@
 #if !__wasm32__
 #error "Only for wasm32"
 #endif
+#if !defined(__wasm_reference_types__)
+#error "Wasm reference types are required. Compile with -mreference-types."
+#endif
 
 #if defined(__EMSCRIPTEN__) || defined(EXTERN_DEDUPLICATE)
 #define _HIWIRE_CAN_DEDUPLICATE 1
