@@ -9,6 +9,11 @@ extern “C” {
 #define CAN_DEDUPLICATE 1
 #endif
 
+_Static_assert(alignof(HwRef) == alignof(int),
+               "HwRef should have the same alignment as int.");
+_Static_assert(sizeof(HwRef) == sizeof(int),
+               "HwRef should have the same size as int.");
+
 #define ALLOC_INCREMENT 1024
 
 #include "compat.c"

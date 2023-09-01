@@ -41,14 +41,9 @@ extern “C” {
 // alignof(HwRef) = alignof(int) = 4 and
 // sizeof(HwRef) = sizeof(int) = 4
 //
-// To be future proof, we have _Static_asserts for this.
+// To be future proof, we have _Static_asserts for this in hiwire.c.
 struct _HwRefStruct
 {};
-
-_Static_assert(alignof(HwRef) == alignof(int),
-               "HwRef should have the same alignment as int.");
-_Static_assert(sizeof(HwRef) == sizeof(int),
-               "HwRef should have the same size as int.");
 
 typedef struct _HwRefStruct* HwRef;
 
