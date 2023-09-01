@@ -2,7 +2,14 @@
 #include "stdalign.h"
 
 #ifdef __cplusplus
-extern “C” {
+extern “C”
+{
+#endif
+#if true && false
+  // Prevent clang-format from indenting extern "C" body.
+  // It's smart enough to understand #if false and ignore it, but not true &&
+  // false!
+}
 #endif
 
 #if defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) || defined(HIWIRE_EXTERN_DEDUPLICATE)
@@ -25,9 +32,8 @@ _Static_assert(sizeof(HwRef) == sizeof(int),
 #define TRACEREFS(...)
 #define FAIL_INVALID_ID(ref) // printf("Fail!!\n")
 
-
-
-struct _hiwire_data_t {
+struct _hiwire_data_t
+{
   int freeHead;
   int* slotInfo;
   int slotInfoSize;
@@ -44,22 +50,24 @@ static struct _hiwire_data_t _hiwire = {
 #include "_deduplicate.c"
 
 HwRef
-hiwire_intern(__externref_t value) {
+hiwire_intern(__externref_t value)
+{
   int index = _hiwire_immortal_add(value);
   if (index == -1) {
     // TODO: operation failed..
     return NULL;
   }
   HwRef result = IMMORTAL_INDEX_TO_REF(index);
-  #if CAN_DEDUPLICATE
-    _hiwire_deduplicate_set(value, result);
-  #endif
+#if CAN_DEDUPLICATE
+  _hiwire_deduplicate_set(value, result);
+#endif
   return result;
 }
 #include "stdio.h"
 
 HwRef
-hiwire_new(__externref_t value) {
+hiwire_new(__externref_t value)
+{
   int index = _hiwire.freeHead;
   if (_hiwire.slotInfoSize == 0) {
     _hiwire_table_init();
@@ -77,10 +85,10 @@ hiwire_new(__externref_t value) {
     _hiwire.slotInfoSize += ALLOC_INCREMENT;
     _hiwire.slotInfo = newSlotInfo;
   }
-  _hiwire.numKeys ++;
+  _hiwire.numKeys++;
   int info = _hiwire.slotInfo[index];
-  _hiwire.freeHead = HEAP_INFO_TO_NEXTFREE(info); 
-  if(_hiwire.freeHead == 0) {
+  _hiwire.freeHead = HEAP_INFO_TO_NEXTFREE(info);
+  if (_hiwire.freeHead == 0) {
     _hiwire.freeHead = _hiwire.numKeys + 1;
   }
   _hiwire.slotInfo[index] = HEAP_NEW_OCCUPIED_INFO(info);
@@ -92,18 +100,21 @@ hiwire_new(__externref_t value) {
 }
 
 // for testing purposes.
-int 
-_hiwire_num_keys(void) {
+int
+_hiwire_num_keys(void)
+{
   return _hiwire.numKeys;
 }
 
 int
-_hiwire_slot_info(int index) {
+_hiwire_slot_info(int index)
+{
   return _hiwire.slotInfo[index];
 };
 
-__externref_t 
-hiwire_get(HwRef ref) {
+__externref_t
+hiwire_get(HwRef ref)
+{
   if (!ref) {
     FAIL_INVALID_ID(ref);
     return __builtin_wasm_ref_null_extern();
@@ -121,7 +132,8 @@ hiwire_get(HwRef ref) {
 };
 
 void
-hiwire_incref (HwRef ref) {
+hiwire_incref(HwRef ref)
+{
   if (IS_IMMORTAL(ref)) {
     return;
   }
@@ -137,7 +149,9 @@ hiwire_incref (HwRef ref) {
   return;
 };
 
-void hiwire_decref(HwRef ref) {
+void
+hiwire_decref(HwRef ref)
+{
   if (IS_IMMORTAL(ref)) {
     return;
   }
@@ -159,14 +173,15 @@ void hiwire_decref(HwRef ref) {
     info = FREE_LIST_INFO(info, _hiwire.freeHead);
     _hiwire.freeHead = index;
   }
-  _hiwire.slotInfo[index] = info; 
+  _hiwire.slotInfo[index] = info;
 }
 
 __externref_t
-hiwire_pop (HwRef ref) {
-    __externref_t value = hiwire_get(ref);
-    hiwire_decref(ref);
-    return value;
+hiwire_pop(HwRef ref)
+{
+  __externref_t value = hiwire_get(ref);
+  hiwire_decref(ref);
+  return value;
 }
 
 #ifdef __cplusplus

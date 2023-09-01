@@ -12,16 +12,23 @@
 #error "HIWIRE_EMSCRIPTEN_DEDUPLICATE only works on with Emscripten"
 #endif
 #if defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) && defined(HIWIRE_EXTERN_DEDUPLICATE)
-#error "only define one of HIWIRE_EMSCRIPTEN_DEDUPLICATE or HIWIRE_EXTERN_DEDUPLICATE"
+#error                                                                         \
+  "only define one of HIWIRE_EMSCRIPTEN_DEDUPLICATE or HIWIRE_EXTERN_DEDUPLICATE"
 #endif
 #if defined(HIWIRE_STATIC_PAGES) && defined(HIWIRE_EXTERN_REALLOC)
 #error "only define one of HIWIRE_STATIC_PAGES or HIWIRE_EXTERN_REALLOC"
 #endif
 
 #ifdef __cplusplus
-extern “C” {
+extern “C”
+{
 #endif
-
+#if true && false
+  // Prevent clang-format from indenting extern "C" body.
+  // It's smart enough to understand #if false and ignore it, but not true &&
+  // false!
+}
+#endif
 
 /**
  * hiwire: A super-simple framework for converting values between C and
@@ -58,8 +65,8 @@ HwRef
 hiwire_new(__externref_t value);
 
 /**
- * Place an immortal reference into the map under a new key and return the key.
- * It's possible to have at most 2^31 immortal references.
+ * Place an immortal reference into the map under a new key and return the
+ * key. It's possible to have at most 2^31 immortal references.
  */
 HwRef
 hiwire_intern(__externref_t value);
@@ -71,30 +78,31 @@ __externref_t
 hiwire_get(HwRef ref);
 
 void
-hiwire_incref (HwRef ref);
+hiwire_incref(HwRef ref);
 
 void
-hiwire_decref (HwRef ref);
+hiwire_decref(HwRef ref);
 
 /**
  * Use hiwire_get to look up the value then decrement the reference count.
  */
 __externref_t
-hiwire_pop (HwRef ref);
+hiwire_pop(HwRef ref);
 
 /**
- * If ref1 and ref2 point to the same host value, hiwire_incref_deduplicate will
- * return equal values. This can be used to check equality of the host values
- * with C equality checks.
+ * If ref1 and ref2 point to the same host value, hiwire_incref_deduplicate
+ * will return equal values. This can be used to check equality of the host
+ * values with C equality checks.
  */
-HwRef hiwire_incref_deduplicate(HwRef ref)
-#if !defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) && !defined(HIWIRE_EXTERN_DEDUPLICATE)
-__attribute__((unavailable(
+HwRef
+hiwire_incref_deduplicate(HwRef ref)
+#if !defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) &&                                 \
+  !defined(HIWIRE_EXTERN_DEDUPLICATE)
+  __attribute__((unavailable(
     "To use hiwire_incref_deduplicate you must compile with "
-    "-DHIWIRE_EMSCRIPTEN_DEDUPLICATE or -DHIWIRE_EXTERN_DEDUPLICATE"
-)))
+    "-DHIWIRE_EMSCRIPTEN_DEDUPLICATE or -DHIWIRE_EXTERN_DEDUPLICATE")))
 #endif
-;
+  ;
 
 #ifdef __cplusplus
 }

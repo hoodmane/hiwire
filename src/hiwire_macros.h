@@ -11,6 +11,7 @@
 #define IMMORTAL_REF_TO_INDEX(ref) (((int)(ref)) >> 1)
 #define IMMORTAL_INDEX_TO_REF(index) ((HwRef)((index) << 1))
 
+// clang-format off
 // Heap slotmap layout macros
 
 // The idea of a slotmap is that we use a list for storage. we use the empty
@@ -31,7 +32,7 @@
 // of the slotmap state. So references, occupied slot info, and unoccupied slot
 // info all look like:
 //
-//  [version (6 bits)][multipurpose field (25 bits)][1 bit]
+//   [version (6 bits)][multipurpose field (25 bits)][1 bit]
 //
 // The least significant bit is set in the references to indicate that they are
 // heap references. The least significant bit is set in the info if the slot is
@@ -53,17 +54,19 @@
 //      occupied slot: [version (6 bits)][refcount (24 bits)][IS_DEDUPLICATED bit]1
 //
 // Deduplicated HwRefs are ~50x more expensive to allocate/deallocate.
+// clang-format on
 
-
-#define VERSION_SHIFT 26 // 1 occupied bit, 25 bits of index/nextfree/refcount, then the version
-#define INDEX_MASK            0x03FFFFFE // mask for index/nextfree
-#define REFCOUNT_MASK         0x03FFFFFC // mask for refcount
+#define VERSION_SHIFT                                                          \
+  26 // 1 occupied bit, 25 bits of index/nextfree/refcount, then the version
+#define INDEX_MASK 0x03FFFFFE            // mask for index/nextfree
+#define REFCOUNT_MASK 0x03FFFFFC         // mask for refcount
 #define VERSION_OCCUPIED_MASK 0xFc000001 // mask for version and occupied bit
-#define VERSION_MASK          0xFc000000 // mask for version
+#define VERSION_MASK 0xFc000000          // mask for version
 #define OCCUPIED_BIT 1                   // occupied bit mask
-#define DEDUPLICATED_BIT 2               // is it deduplicated? (used for HwRefs)
-#define REFCOUNT_INTERVAL 4              // The refcount starts after OCCUPIED_BIT and DEDUPLICATED_BIT
-#define NEW_INFO_FLAGS 5                 // REFCOUNT_INTERVAL | OCCUPIED_BIT
+#define DEDUPLICATED_BIT 2 // is it deduplicated? (used for HwRefs)
+#define REFCOUNT_INTERVAL                                                      \
+  4 // The refcount starts after OCCUPIED_BIT and DEDUPLICATED_BIT
+#define NEW_INFO_FLAGS 5 // REFCOUNT_INTERVAL | OCCUPIED_BIT
 
 // Check that the constants are internally consistent
 _Static_assert(INDEX_MASK == ((1 << VERSION_SHIFT) - 2), "Oops!");
@@ -78,11 +81,11 @@ _Static_assert(NEW_INFO_FLAGS == (REFCOUNT_INTERVAL | OCCUPIED_BIT), "Oops");
 // The ref is always odd so this is truthy if info is even (meaning unoccupied)
 // or info has a different version than ref. Masking removes the bits that form
 // the index in the reference and the refcount/next free index in the info.
-#define HEAP_REF_IS_OUT_OF_DATE(ref, info) \
+#define HEAP_REF_IS_OUT_OF_DATE(ref, info)                                     \
   ((((int)(ref)) ^ (info)) & VERSION_OCCUPIED_MASK)
 
-#define HEAP_IS_REFCNT_ZERO(info) (!((info) & REFCOUNT_MASK))
-#define HEAP_IS_DEDUPLICATED(info) ((info) & DEDUPLICATED_BIT)
+#define HEAP_IS_REFCNT_ZERO(info) (!((info)&REFCOUNT_MASK))
+#define HEAP_IS_DEDUPLICATED(info) ((info)&DEDUPLICATED_BIT)
 
 #define HEAP_INCREF(info) info += REFCOUNT_INTERVAL
 #define HEAP_DECREF(info) info -= REFCOUNT_INTERVAL
@@ -90,12 +93,14 @@ _Static_assert(NEW_INFO_FLAGS == (REFCOUNT_INTERVAL | OCCUPIED_BIT), "Oops");
 // increment the version in info.
 #define _NEXT_VERSION(info) (info + (1 << VERSION_SHIFT))
 // assemble version, field, and occupied
-#define _NEW_INFO(version, field_and_flag) \
-  (((version) & VERSION_MASK) | (field_and_flag))
+#define _NEW_INFO(version, field_and_flag)                                     \
+  (((version)&VERSION_MASK) | (field_and_flag))
 
 // make a new reference with the same version as info and the given index.
 #define HEAP_NEW_REF(index, info) ((HwRef)_NEW_INFO(info, ((index) << 1) | 1))
-// new occupied info: same version as argument info, NEW_INFO_FLAGS says occupied with refcount 1
+// new occupied info: same version as argument info, NEW_INFO_FLAGS says
+// occupied with refcount 1
 #define HEAP_NEW_OCCUPIED_INFO(info) _NEW_INFO(info, NEW_INFO_FLAGS)
 // new unoccupied info, increment version and nextfree in the field
-#define FREE_LIST_INFO(info, nextfree) _NEW_INFO(_NEXT_VERSION(info), (nextfree) << 1)
+#define FREE_LIST_INFO(info, nextfree)                                         \
+  _NEW_INFO(_NEXT_VERSION(info), (nextfree) << 1)
