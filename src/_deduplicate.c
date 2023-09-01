@@ -23,7 +23,7 @@ EM_JS(void, _hiwire_deduplicate_delete, (__externref_t value), {
 #endif
 
 HwRef hiwire_incref_deduplicate(HwRef ref) {
-  __externref_t value = hiwire_get_value(ref);
+  __externref_t value = hiwire_get(ref);
   HwRef result = _hiwire_deduplicate_get(value);
   if (!result) {
     // not present, use ref

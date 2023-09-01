@@ -53,7 +53,7 @@ hiwire_intern(__externref_t value) {
 #include "stdio.h"
 
 HwRef
-hiwire_new_value(__externref_t value) {
+hiwire_new(__externref_t value) {
   int index = _hiwire.freeHead;
   if (_hiwire.slotInfoSize == 0) {
     _hiwire_table_init();
@@ -97,7 +97,7 @@ _hiwire_slot_info(int index) {
 };
 
 __externref_t 
-hiwire_get_value(HwRef ref) {
+hiwire_get(HwRef ref) {
   if (!ref) {
     FAIL_INVALID_ID(ref);
     return __builtin_wasm_ref_null_extern();
@@ -158,7 +158,7 @@ void hiwire_decref(HwRef ref) {
 
 __externref_t
 hiwire_pop (HwRef ref) {
-    __externref_t value = hiwire_get_value(ref);
+    __externref_t value = hiwire_get(ref);
     hiwire_decref(ref);
     return value;
 }

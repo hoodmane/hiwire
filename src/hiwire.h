@@ -39,10 +39,10 @@ HwRef
 hiwire_intern(__externref_t value);
 
 HwRef
-hiwire_new_value(__externref_t ref);
+hiwire_new(__externref_t ref);
 
 __externref_t
-hiwire_get_value(HwRef ref);
+hiwire_get(HwRef ref);
 
 void
 hiwire_incref (HwRef ref);
