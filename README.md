@@ -1,4 +1,4 @@
-# Hiwire: Wasm Reference Type support for C/C++
+# Hiwire: Wasm Reference Type helpers for C/C++
 
 WebAssembly `externref` values are very exciting: they allow us to pass host
 references around in WebAssembly efficiently without doing any complicated dance
@@ -92,6 +92,7 @@ As of this writing, no stable clang has been released since June 10th, but
 17.0.0-rc1 is a candidate. Also, to be able to use this you need to compile with
 `-mreference-types`.
 
+Specicially, we need clang to include [this commit](https://github.com/llvm/llvm-project/commit/55aeb23fe0084d930ecd7335092d712bd71694c7).
 
 ## Compiler flags
 
