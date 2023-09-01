@@ -7,10 +7,10 @@
 #include "compat.c"
 
 
-_Static_assert(alignof(JsRef) == alignof(int),
-               "JsRef should have the same alignment as int.");
-_Static_assert(sizeof(JsRef) == sizeof(int),
-               "JsRef should have the same size as int.");
+_Static_assert(alignof(HwRef) == alignof(int),
+               "HwRef should have the same alignment as int.");
+_Static_assert(sizeof(HwRef) == sizeof(int),
+               "HwRef should have the same size as int.");
 
 #define HIWIRE_INTERNAL
 #include "hiwire_macros.h"
@@ -37,14 +37,14 @@ static struct _hiwire_data_t _hiwire = {
 
 #include "_deduplicate.c"
 
-JsRef
+HwRef
 hiwire_intern(__externref_t value) {
   int index = _hiwire_immortal_add(value);
   if (index == -1) {
     // TODO: operation failed..
     return NULL;
   }
-  JsRef result = IMMORTAL_INDEX_TO_REF(index);
+  HwRef result = IMMORTAL_INDEX_TO_REF(index);
   #if CAN_DEDUPLICATE
     _hiwire_deduplicate_set(value, result);
   #endif
@@ -52,7 +52,7 @@ hiwire_intern(__externref_t value) {
 }
 #include "stdio.h"
 
-JsRef
+HwRef
 hiwire_new_value(__externref_t value) {
   int index = _hiwire.freeHead;
   if (_hiwire.slotInfoSize == 0) {
@@ -97,7 +97,7 @@ _hiwire_slot_info(int index) {
 };
 
 __externref_t 
-hiwire_get_value(JsRef ref) {
+hiwire_get_value(HwRef ref) {
   if (!ref) {
     FAIL_INVALID_ID(ref);
     return __builtin_wasm_ref_null_extern();
@@ -115,7 +115,7 @@ hiwire_get_value(JsRef ref) {
 };
 
 void
-hiwire_incref (JsRef ref) {
+hiwire_incref (HwRef ref) {
   if (IS_IMMORTAL(ref)) {
     return;
   }
@@ -131,7 +131,7 @@ hiwire_incref (JsRef ref) {
   return;
 };
 
-void hiwire_decref(JsRef ref) {
+void hiwire_decref(HwRef ref) {
   if (IS_IMMORTAL(ref)) {
     return;
   }
@@ -157,7 +157,7 @@ void hiwire_decref(JsRef ref) {
 }
 
 __externref_t
-hiwire_pop (JsRef ref) {
+hiwire_pop (HwRef ref) {
     __externref_t value = hiwire_get_value(ref);
     hiwire_decref(ref);
     return value;

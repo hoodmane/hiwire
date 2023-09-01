@@ -2,7 +2,7 @@
 
 int main() {
     int offset = 80000;
-    JsRef refs[5000];
+    HwRef refs[5000];
     for(int i = 0; i < 5000; i++) {
       refs[i] = hiwire_new_value(int_to_ref(offset + i));
     }

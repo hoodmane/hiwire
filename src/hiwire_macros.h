@@ -2,14 +2,14 @@
 #error "private header"
 #endif
 
-// JsRefs are:
+// HwRefs are:
 // * heap             if they are odd,
 // * immortal         if they are even
 //
 // Note that "NULL" is immortal which is important.
 #define IS_IMMORTAL(idval) ((((int)(ref)) & 1) == 0)
 #define IMMORTAL_REF_TO_INDEX(ref) (((int)(ref)) >> 1)
-#define IMMORTAL_INDEX_TO_REF(index) ((JsRef)((index) << 1))
+#define IMMORTAL_INDEX_TO_REF(index) ((HwRef)((index) << 1))
 
 // Heap slotmap layout macros
 
@@ -62,7 +62,7 @@
 #define VERSION_OCCUPIED_MASK 0xFc000001 // mask for version and occupied bit
 #define VERSION_MASK          0xFc000000 // mask for version
 #define OCCUPIED_BIT 1                   // occupied bit mask
-#define DEDUPLICATED_BIT 2               // is it deduplicated? (used for JsRefs)
+#define DEDUPLICATED_BIT 2               // is it deduplicated? (used for HwRefs)
 #define REFCOUNT_INTERVAL 4              // The refcount starts after OCCUPIED_BIT and DEDUPLICATED_BIT
 #define NEW_INFO_FLAGS 5                 // REFCOUNT_INTERVAL | OCCUPIED_BIT
 
@@ -95,7 +95,7 @@ _Static_assert(NEW_INFO_FLAGS == (REFCOUNT_INTERVAL | OCCUPIED_BIT), "Oops");
   (((version) & VERSION_MASK) | (field_and_flag))
 
 // make a new reference with the same version as info and the given index.
-#define HEAP_NEW_REF(index, info) ((JsRef)_NEW_INFO(info, ((index) << 1) | 1))
+#define HEAP_NEW_REF(index, info) ((HwRef)_NEW_INFO(info, ((index) << 1) | 1))
 // new occupied info: same version as argument info, NEW_INFO_FLAGS says occupied with refcount 1
 #define HEAP_NEW_OCCUPIED_INFO(info) _NEW_INFO(info, NEW_INFO_FLAGS)
 // new unoccupied info, increment version and nextfree in the field

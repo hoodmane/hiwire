@@ -2,14 +2,14 @@
 
 int main() {
     ASSERT_EQ(_hiwire_num_keys(), 0);
-    JsRef id1 = hiwire_new_value(int_to_ref(5));
+    HwRef id1 = hiwire_new_value(int_to_ref(5));
     ASSERT_EQ(_hiwire_num_keys(), 1);
 
-    JsRef id2 = hiwire_new_value(int_to_ref(7));
+    HwRef id2 = hiwire_new_value(int_to_ref(7));
     ASSERT_EQ(_hiwire_num_keys(), 2);
-    JsRef id3 = hiwire_new_value(int_to_ref(10));
+    HwRef id3 = hiwire_new_value(int_to_ref(10));
     ASSERT_EQ(_hiwire_num_keys(), 3);
-    JsRef id4 = hiwire_new_value(int_to_ref(12));
+    HwRef id4 = hiwire_new_value(int_to_ref(12));
     ASSERT_EQ(_hiwire_num_keys(), 4);
 
     ASSERT_EQ(ref_to_int(hiwire_get_value(id1)), 5);

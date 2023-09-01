@@ -2,7 +2,7 @@
 
 
 int main() {
-    JsRef id1 = hiwire_new_value(int_to_ref(7));
+    HwRef id1 = hiwire_new_value(int_to_ref(7));
     ASSERT(HEAP_REF_TO_INDEX(id1) == 1);
     ASSERT(REF_VERSION(id1) == 0);
 
@@ -17,7 +17,7 @@ int main() {
     ASSERT(is_null(hiwire_get_value(id1)));
 
 
-    JsRef id2 = hiwire_new_value(int_to_ref(8));
+    HwRef id2 = hiwire_new_value(int_to_ref(8));
     ASSERT(HEAP_REF_TO_INDEX(id2) == 1);
     ASSERT(REF_VERSION(id2) == 1);
 
@@ -28,13 +28,13 @@ int main() {
     ASSERT(is_null(hiwire_get_value(id1)));
     hiwire_decref(id2);
 
-    JsRef id3 = hiwire_new_value(int_to_ref(123));
+    HwRef id3 = hiwire_new_value(int_to_ref(123));
     hiwire_decref(id3);
 
     for (int i = 0; i < 49; i++) {
       hiwire_decref(hiwire_new_value(int_to_ref(i + 10)));
     }
-    JsRef id4 = hiwire_new_value(int_to_ref(49 + 10));
+    HwRef id4 = hiwire_new_value(int_to_ref(49 + 10));
     ASSERT(HEAP_REF_TO_INDEX(id3) == 1);
     ASSERT(REF_VERSION(id4) == 52);
     ASSERT(SLOT_VERSION(id4) == 52);
@@ -49,7 +49,7 @@ int main() {
     for (int i = 0; i < 13; i++) {
       hiwire_decref(hiwire_new_value(int_to_ref(i + 60)));
     }
-    JsRef id_dup = hiwire_new_value(int_to_ref(678));
+    HwRef id_dup = hiwire_new_value(int_to_ref(678));
 
     ASSERT(HEAP_REF_TO_INDEX(id_dup) == 1);
     ASSERT(REF_VERSION(id_dup) == 2);

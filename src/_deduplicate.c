@@ -6,14 +6,14 @@
 #else
 #include "emscripten.h"
 
-EM_JS(JsRef, _hiwire_deduplicate_get, (__externref_t value), {
+EM_JS(HwRef, _hiwire_deduplicate_get, (__externref_t value), {
   let result = _hiwire_deduplicate_map.get(value);
   return result;
 }
 var _hiwire_deduplicate_map = new Map();
 );
 
-EM_JS(void,  _hiwire_deduplicate_set, (__externref_t value, JsRef ref), {
+EM_JS(void,  _hiwire_deduplicate_set, (__externref_t value, HwRef ref), {
   _hiwire_deduplicate_map.set(value, ref);
 });
 
@@ -22,9 +22,9 @@ EM_JS(void, _hiwire_deduplicate_delete, (__externref_t value), {
 });
 #endif
 
-JsRef hiwire_incref_deduplicate(JsRef ref) {
+HwRef hiwire_incref_deduplicate(HwRef ref) {
   __externref_t value = hiwire_get_value(ref);
-  JsRef result = _hiwire_deduplicate_get(value);
+  HwRef result = _hiwire_deduplicate_get(value);
   if (!result) {
     // not present, use ref
     result = ref;
