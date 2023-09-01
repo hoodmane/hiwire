@@ -23,6 +23,7 @@ quote [the slotmap description](https://docs.rs/slotmap/latest/slotmap/):
 > remove the values. Insertion, removal and access all take O(1) time with low
 > overhead.
 
+
 ## API
 
 An `externref` can be placed into the table with `hiwire_new` which
@@ -43,17 +44,53 @@ void hiwire_decref(HwRef ref);
 ```
 if the reference count reaches zero, the value is removed from the map, which
 allows the host to garbage collect it. The reference becomes invalid.
-`hiwire_pop` is a convenience method which first uses `hiwire_get` and
-then `hiwire_decref`.
-```C
-__externref_t hiwire_get(HwRef ref);
-```
+
+`NULL` is a distinct `HwRef`. Calling `hiwire_get(NULL)` will [TODO what will it do?]
+`hiwire_incref` and `hiwire_decref` both are no-ops on `NULL`.
+
 There are also immortal references which can be created with `hiwire_intern`.
 These are never released and `hiwire_incref` and `hiwire_decref` are no-ops.
 ```C
 HwRef hiwire_intern(__externref_t value)
 ```
 
+`hiwire_pop` is a convenience method which first uses `hiwire_get` and
+then `hiwire_decref`.
+```C
+__externref_t hiwire_pop(HwRef ref);
+```
+
+Finally, there is `hiwire_incref_deduplicate`:
+```C
+HwRef hiwire_incref_deduplicate(HwRef ref)
+```
+the purpose of this method is to ensure that the returned `HwRef`s will be equal
+if the references point to the same host object. This allows you to use the
+resulting `HwRef` as C map keys and it will index on host object equality.
+
+To use `hiwire_incref_deduplicate` you need to define either
+`HIWIRE_EMSCRIPTEN_DEDUPLICATE` or `HIWIRE_EXTERN_DEDUPLICATE`, see
+compatibility. With `HIWIRE_EXTERN_DEDUPLICATE` you can choose the notion of
+host object equality that is used, with `HIWIRE_EMSCRIPTEN_DEDUPLICATE`, two
+externrefs are equal if the pointed-to values are `===` to each other.
+
+Note that with `HIWIRE_EMSCRIPTEN_DEDUPLICATE`, `hiwire_incref_deduplicate` is
+~100x slower than the other APIs here and makes freeing the reference also 100x
+slower.
+
+
+## Limits
+
+You can have at most 2^25 = 33,554,432 keys at once. Each key has a maximum
+reference count of 2^24 = 16,777,216.
+
+
+## Compiler requirements
+
+Requires either Emscripten >= 3.1.42 or clang more recent than June 10th 2023.
+As of this writing, no stable clang has been released since June 10th, but
+17.0.0-rc1 is a candidate. Also, to be able to use this you need to compile with
+`-mreference-types`.
 
 
 ## Compiler flags
@@ -63,12 +100,36 @@ recommend compiling with adding `-Werror=int-conversion` and
 `-Werror=incompatible-pointer-types` to prevent implicit casts between `HwRef`
 and other types.
 
-## Compiler requirements
 
-Requires either Emscripten >= 3.1.42 or clang more recent than June 10th 2023.
-As of this writing, no stable clang has been released since June 10th, but
-17.0.0-rc1 is a candidate. Also, to be able to use this you need to compile with
-`-mreference-types`.
+## `wasm32-unknown-unknown` Compatibility
+
+By default, `hiwire` uses `realloc` from the standard library. For
+`wasm32-unknown-unknown` there are three options:
+
+1. Define `-DHIWIRE_STATIC_PAGES=n`. This statically allocates the memory that
+   hiwire needs but limits you to having a maximum of n*1024 distinct references
+   in total. If you exceed this number, `hiwire_new` will fail by returning
+   `NULL`.
+2. Provide an implementation of `realloc` (say by linking a malloc library)
+3. Define `-DHIWIRE_EXTERN_REALLOC` and provide an implementation of
+   `hiwire_realloc`.
+
+You can also use `-DHIWIRE_STATIC_PAGES=n` in Emscripten, but the default
+behavior will just use `realloc`
+
+`hiwire_incref_deduplicate` also needs extra runtime support. You can define
+`HIWIRE_EMSCRIPTEN_DEDUPLICATE` (Emscripten only) which will use `EM_JS`
+functions to provide the functionality needed. Otherwise, you can define
+`HIWIRE_EXTERN_DEDUPLICATE` and then you will need to define three host
+functions: `hiwire_deduplicate_get`, `hiwire_deduplicate_set`, and
+`hiwire_deduplicate_delete`. These have the following signatures and should act
+like a map from `externref` to integers:
+```C
+HwRef hiwire_deduplicate_get(__externref_t value);
+void hiwire_deduplicate_set(__externref_t value, HwRef ref);
+void hiwire_deduplicate_delete(__externref_t value);
+```
+
 
 ## Runtime requirements
 
@@ -81,15 +142,7 @@ is universal among recent WebAssembly runtimes:
   `--experimental-wasm-reftypes` flag)
 
 
-## Design
-
-Each reference contains an index and a 6 bit version so that when indices are
-
-
 ### Related Projects
 
-In
-
-
-The following is a similar project for Rust: https://github.com/slowli/externref
-
+Loosely based on the Rust [slotmap package](https://docs.rs/slotmap/latest/slotmap/).
+Made for use with Pyodide.

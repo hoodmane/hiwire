@@ -39,12 +39,26 @@ struct _HwRefStruct
 
 typedef struct _HwRefStruct* HwRef;
 
+/**
+ * Place a reference counted value into the map under a new key and return the
+ * key.
+ *
+ * It's possible to have at most 2^25 = 33,554,432 distinct references. If
+ * allocation fails, will return `NULL`.
+ */
+HwRef
+hiwire_new(__externref_t value);
+
+/**
+ * Place an immortal reference into the map under a new key and return the key.
+ * It's possible to have at most 2^31 immortal references.
+ */
 HwRef
 hiwire_intern(__externref_t value);
 
-HwRef
-hiwire_new(__externref_t ref);
-
+/**
+ * Look up the externref corresponding to the given HwRef
+ */
 __externref_t
 hiwire_get(HwRef ref);
 
@@ -54,9 +68,17 @@ hiwire_incref (HwRef ref);
 void
 hiwire_decref (HwRef ref);
 
+/**
+ * Use hiwire_get to look up the value then decrement the reference count.
+ */
 __externref_t
 hiwire_pop (HwRef ref);
 
+/**
+ * If ref1 and ref2 point to the same host value, hiwire_incref_deduplicate will
+ * return equal values. This can be used to check equality of the host values
+ * with C equality checks.
+ */
 HwRef hiwire_incref_deduplicate(HwRef ref)
 #if !defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) && !defined(HIWIRE_EXTERN_DEDUPLICATE)
 __attribute__((unavailable(

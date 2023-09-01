@@ -7,7 +7,7 @@
 // * immortal         if they are even
 //
 // Note that "NULL" is immortal which is important.
-#define IS_IMMORTAL(idval) ((((int)(ref)) & 1) == 0)
+#define IS_IMMORTAL(ref) ((((int)(ref)) & 1) == 0)
 #define IMMORTAL_REF_TO_INDEX(ref) (((int)(ref)) >> 1)
 #define IMMORTAL_INDEX_TO_REF(index) ((HwRef)((index) << 1))
 
@@ -18,20 +18,20 @@
 // place as the values. This means that the next slot we assign is always the
 // most recently freed. This leads to the possibility of masking use after free
 // errors, since a recently freed reference will likely point to a valid but
-// different object. To deal with this, we include as part of the reference a 5
+// different object. To deal with this, we include as part of the reference a 6
 // bit version for each slot. Only if the same slot is freed and reassigned 32
 // times can the two references be the same. The references look as follows:
 //
-//   [version (5 bits)][index (25 bits)]1
+//   [version (6 bits)][index (25 bits)]1
 //
-// The highest order 5 bits are the version, the middle 25 bits are the index,
+// The highest order 6 bits are the version, the middle 25 bits are the index,
 // and the least order bit indicates that it is a heap reference. Since we have
 // 25 bits for the index, we can store up to 2^25 = 33,554,432 distinct objects.
 // For each slot we associate an 32 bit "info" integer, which we store as part
 // of the slotmap state. So references, occupied slot info, and unoccupied slot
 // info all look like:
 //
-//  [version (5 bits)][multipurpose field (25 bits)][1 bit]
+//  [version (6 bits)][multipurpose field (25 bits)][1 bit]
 //
 // The least significant bit is set in the references to indicate that they are
 // heap references. The least significant bit is set in the info if the slot is
@@ -39,21 +39,20 @@
 //
 // In a reference, the mulipurpose field contains the slot index.
 //
-//          reference: [version (5 bits)][index (25 bits)]1
+//          reference: [version (6 bits)][index (25 bits)]1
 //
 // If a slot is unoccupied, the multipurpose field of the slotInfo contains the
 // index of the next free slot in the free list or zero if this is the last free
 // slot (for this reason, we do not use slot 0).
 //
-//    unoccupied slot: [version (5 bits)][next free index (25 bits)]0
+//    unoccupied slot: [version (6 bits)][next free index (25 bits)]0
 //
 // If a slot is occupied, the multipurpose field of the slotInfo contains a 24
 // bit reference count and an IS_DEDUPLICATED bit.
 //
-//      occupied slot: [version (5 bits)][refcount (24 bits)][IS_DEDUPLICATED bit]1
+//      occupied slot: [version (6 bits)][refcount (24 bits)][IS_DEDUPLICATED bit]1
 //
-// References used by JsProxies are deduplicated which makes allocating/freeing
-// them more expensive.
+// Deduplicated HwRefs are ~50x more expensive to allocate/deallocate.
 
 
 #define VERSION_SHIFT 26 // 1 occupied bit, 25 bits of index/nextfree/refcount, then the version
