@@ -1,6 +1,10 @@
 #include "hiwire.h"
 #include "stdalign.h"
 
+#ifdef __cplusplus
+extern “C” {
+#endif
+
 #if defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) || defined(HIWIRE_EXTERN_DEDUPLICATE)
 #define CAN_DEDUPLICATE 1
 #endif
@@ -159,3 +163,7 @@ hiwire_pop (HwRef ref) {
     hiwire_decref(ref);
     return value;
 }
+
+#ifdef __cplusplus
+}
+#endif

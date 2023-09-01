@@ -18,6 +18,11 @@
 #error "only define one of HIWIRE_STATIC_PAGES or HIWIRE_EXTERN_REALLOC"
 #endif
 
+#ifdef __cplusplus
+extern “C” {
+#endif
+
+
 /**
  * hiwire: A super-simple framework for converting values between C and
  * JavaScript.
@@ -96,4 +101,8 @@ __attribute__((unavailable(
 #endif
 ;
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif // HIWIRE_H
