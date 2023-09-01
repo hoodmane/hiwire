@@ -42,7 +42,7 @@ test-emcc: \
 	# emcc -L dist/lib -lhiwire tests/test_many_refs.o tests/testlib.o -o tests/test_many_refs.js -sMAIN_MODULE
 	# node tests/test_many_refs.js
 
-	emcc -I dist/include -c tests/test_deduplication.c -o tests/test_deduplication.o -mreference-types -fPIC
+	emcc -DHIWIRE_EMSCRIPTEN_DEDUPLICATE -I dist/include -c tests/test_deduplication.c -o tests/test_deduplication.o -mreference-types -fPIC
 	emcc -L dist/lib -lhiwire tests/test_deduplication.o tests/testlib.o -o tests/test_deduplication.js -sMAIN_MODULE
 	node tests/test_deduplication.js
 

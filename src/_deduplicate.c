@@ -1,9 +1,10 @@
-#if CAN_DEDUPLICATE
-#ifdef EXTERN_DEDUPLICATE
-#define _hiwire_deduplicate_get deduplicate_get
-#define _hiwire_deduplicate_set deduplicate_set
-#define _hiwire_deduplicate_delete deduplicate_delete
-#else
+#ifdef HIWIRE_EXTERN_DEDUPLICATE
+#define _hiwire_deduplicate_get hiwire_deduplicate_get
+#define _hiwire_deduplicate_set hiwire_deduplicate_set
+#define _hiwire_deduplicate_delete hiwire_deduplicate_delete
+#endif
+
+#ifdef HIWIRE_EMSCRIPTEN_DEDUPLICATE
 #include "emscripten.h"
 
 EM_JS(HwRef, _hiwire_deduplicate_get, (__externref_t value), {
@@ -22,6 +23,7 @@ EM_JS(void, _hiwire_deduplicate_delete, (__externref_t value), {
 });
 #endif
 
+#ifdef CAN_DEDUPLICATE
 HwRef hiwire_incref_deduplicate(HwRef ref) {
   __externref_t value = hiwire_get(ref);
   HwRef result = _hiwire_deduplicate_get(value);

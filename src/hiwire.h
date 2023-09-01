@@ -8,10 +8,11 @@
 #error "Wasm reference types are required. Compile with -mreference-types."
 #endif
 
-#if defined(__EMSCRIPTEN__) || defined(EXTERN_DEDUPLICATE)
-#define _HIWIRE_CAN_DEDUPLICATE 1
-#else
-#define _HIWIRE_CAN_DEDUPLICATE 0
+#if defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) && !defined(__EMSCRIPTEN__)
+#error "HIWIRE_EMSCRIPTEN_DEDUPLICATE only works on with Emscripten"
+#endif
+#if defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) && defined(HIWIRE_EXTERN_DEDUPLICATE)
+#error "only define one of HIWIRE_EMSCRIPTEN_DEDUPLICATE or HIWIRE_EXTERN_DEDUPLICATE"
 #endif
 
 /**
@@ -56,8 +57,13 @@ hiwire_decref (HwRef ref);
 __externref_t
 hiwire_pop (HwRef ref);
 
-
-#if _HIWIRE_CAN_DEDUPLICATE
-HwRef hiwire_incref_deduplicate(HwRef ref);
+HwRef hiwire_incref_deduplicate(HwRef ref)
+#if !defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) && !defined(HIWIRE_EXTERN_DEDUPLICATE)
+__attribute__((unavailable(
+    "To use hiwire_incref_deduplicate you must compile with "
+    "-DHIWIRE_EMSCRIPTEN_DEDUPLICATE or -DHIWIRE_EXTERN_DEDUPLICATE"
+)))
 #endif
+;
+
 #endif
