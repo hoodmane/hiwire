@@ -1,5 +1,7 @@
 *.o
 *.js
 *.wasm
+build
 dist
 .vscode
+__pycache__

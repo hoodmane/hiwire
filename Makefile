@@ -1,17 +1,39 @@
-OPTFLAGS ?= -O2
-CFLAGS+= -fPIC -mreference-types -Werror=int-conversion -Werror=incompatible-pointer-types $(DBGFLAGS) $(OPTFLAGS)
-
-LDFLAGS=$(DBGFLAGS) $(OPTFLAGS)
+SHELL := /bin/bash
+CFLAGS+= \
+	-fPIC \
+	-mreference-types \
+	-mbulk-memory \
+	-Werror=int-conversion \
+	-Werror=incompatible-pointer-types \
+	$(DBGFLAGS) $(OPTFLAGS)
 
 all: \
 	dist/include/hiwire.h	\
+	dist/include/_hiwire_config.h	\
 	dist/lib/libhiwire.a
+
+build/_hiwire_config.h:
+	mkdir -p build
+	touch $@
+	for A in \
+		EMSCRIPTEN_DEDUPLICATE \
+		EXTERN_DEDUPLICATE \
+		STATIC_PAGES \
+		EXTERN_REALLOC \
+	; do \
+		echo $${!A+#define _HIWIRE_$$A $${!A}} >> $@ ; \
+	done
+
 
 dist/include/hiwire.h: src/hiwire.h
 	mkdir -p dist/include
 	cp $< $@
 
-dist/lib/libhiwire.a: src/hiwire.o src/wasm_table.o
+dist/include/_hiwire_config.h: build/_hiwire_config.h
+	mkdir -p dist/include
+	cp $< $@
+
+dist/lib/libhiwire.a: build/hiwire.o build/wasm_table.o
 	mkdir -p dist/lib
 	if type emar > /dev/null ; then \
 		emar rcs $@ $(filter %.o,$^) ; \
@@ -22,16 +44,14 @@ dist/lib/libhiwire.a: src/hiwire.o src/wasm_table.o
 		fi \
 	fi
 
-src/wasm_table.o: src/wasm_table.c
+build/wasm_table.o: src/wasm_table.c
+	mkdir -p build
 	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ -fno-PIC
 
-src/hiwire.o: src/*.c src/*.h
-	$(CC) -c src/hiwire.c -o src/hiwire.o $(CFLAGS) -Isrc/
-
-%.o: %.c $(wildcard src/*.h) src/_deduplicate.c
-	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ $(NOT_S_FLAGS)
+build/hiwire.o: src/*.c src/*.h build/_hiwire_config.h
+	mkdir -p build
+	$(CC) -o $@ -c src/hiwire.c $(CFLAGS) -Isrc/ -Ibuild/
 
 clean:
-	rm -f src/*.o
-	rm -rf dist
+	rm -rf build dist
 	rm -rf tests/*.{js,wasm,o}
