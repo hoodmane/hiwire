@@ -25,6 +25,7 @@ EM_JS(void, _hiwire_deduplicate_delete, (__externref_t value), {
 // clang-format on
 #endif
 
+#ifdef _HIWIRE_CAN_DEDUPLICATE
 HwRef
 _hiwire_deduplicate_get(__externref_t value);
 void
@@ -48,3 +49,11 @@ hiwire_incref_deduplicate(HwRef ref)
   hiwire_incref(result);
   return result;
 }
+
+#else
+
+// These are used in hiwire.c, make into no-ops.
+#define _hiwire_deduplicate_set(a, b)
+#define _hiwire_deduplicate_delete(a)
+
+#endif

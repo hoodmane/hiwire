@@ -1,18 +1,6 @@
 #include "hiwire.h"
-#include "stdalign.h"
-
-_Static_assert(alignof(HwRef) == alignof(int),
-               "HwRef should have the same alignment as int.");
-_Static_assert(sizeof(HwRef) == sizeof(int),
-               "HwRef should have the same size as int.");
 
 #define ALLOC_INCREMENT 1024
-
-#include "compat.c"
-
-#include "hiwire_macros.h"
-#include "wasm_table.h"
-
 #define TRACEREFS(...)
 #define FAIL_INVALID_ID(ref) // printf("Fail!!\n")
 
@@ -31,9 +19,11 @@ static struct _hiwire_data_t _hiwire = {
   .slotInfoSize = 0,
 };
 
-#ifdef _HIWIRE_CAN_DEDUPLICATE
+#include "hiwire_macros.h"
+#include "wasm_table.h"
+
 #include "_deduplicate.c"
-#endif
+#include "compat.c"
 
 HwRef
 hiwire_intern(__externref_t value)
@@ -44,9 +34,7 @@ hiwire_intern(__externref_t value)
     return NULL;
   }
   HwRef result = IMMORTAL_INDEX_TO_REF(index);
-#if _HIWIRE_CAN_DEDUPLICATE
   _hiwire_deduplicate_set(value, result);
-#endif
   return result;
 }
 
@@ -66,7 +54,7 @@ hiwire_new(__externref_t value)
       // TODO: fatal?
       return NULL;
     }
-    memset(((char*)newSlotInfo) + orig_size, 0, new_size - orig_size);
+    hiwire_memset(((char*)newSlotInfo) + orig_size, 0, new_size - orig_size);
     _hiwire.slotInfoSize += ALLOC_INCREMENT;
     _hiwire.slotInfo = newSlotInfo;
   }
@@ -148,11 +136,9 @@ hiwire_decref(HwRef ref)
   }
   HEAP_DECREF(info);
   if (HEAP_IS_REFCNT_ZERO(info)) {
-#if _HIWIRE_CAN_DEDUPLICATE
     if (HEAP_IS_DEDUPLICATED(info)) {
       _hiwire_deduplicate_delete(_hiwire_get(index));
     }
-#endif
     _hiwire_delete(index);
     _hiwire.numKeys--;
     info = FREE_LIST_INFO(info, _hiwire.freeHead);
