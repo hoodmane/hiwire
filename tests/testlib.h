@@ -1,7 +1,7 @@
 #undef HIWIRE_H
 #undef _STDIO_H
 #include "hiwire.h"
-#include "stdio.h"
+
 #define HIWIRE_INTERNAL
 #include "../src/hiwire_macros.h"
 #undef HIWIRE_INTERNAL
@@ -39,10 +39,41 @@ int
 _hiwire_slot_info(int);
 
 __externref_t
-int_to_ref(int x);
+int_to_ref(int x)
+  __attribute__((import_module("env"), import_name("int_to_ref")));
+
 __externref_t
-get_obj(int x);
+get_obj(int x) __attribute__((import_module("env"), import_name("get_obj")));
+
 int
-ref_to_int(__externref_t x);
+ref_to_int(__externref_t x)
+  __attribute__((import_module("env"), import_name("ref_to_int")));
+
 int
-is_null(__externref_t x);
+is_null(__externref_t x)
+  __attribute__((import_module("env"), import_name("is_null")));
+
+#ifdef _HIWIRE_EXTERN_DEDUPLICATE
+
+HwRef
+_hiwire_deduplicate_get(__externref_t value)
+  __attribute__((import_module("env"), import_name("_hiwire_deduplicate_get")));
+
+void
+_hiwire_deduplicate_set(__externref_t value, HwRef ref)
+  __attribute__((import_module("env"), import_name("_hiwire_deduplicate_set")));
+
+void
+_hiwire_deduplicate_delete(__externref_t value)
+  __attribute__((import_module("env"),
+                 import_name("_hiwire_deduplicate_delete")));
+
+#endif
+
+#if __has_include("stdio.h")
+#include "stdio.h"
+#else
+int
+printf(const char*, ...)
+  __attribute__((import_module("env"), import_name("printf")));
+#endif

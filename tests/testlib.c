@@ -1,15 +1,9 @@
 #include "testlib.h"
 
-// clang-format off
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"
-#else
-#define EM_JS(ret, name, params, rest...) \
-    __attribute__((import_module("env"), import_name(# name))) \
-    ret name params;
 
-#endif
-
+// clang-format off
 EM_JS(__externref_t, int_to_ref, (int x), {
     return x;
 })
@@ -26,3 +20,37 @@ EM_JS(int, is_null, (__externref_t x), {
     return x == null;
 })
 // clang-format on
+
+#endif
+
+#if !defined(__wasi__) && !defined(__EMSCRIPTEN__)
+int
+main();
+int
+_start()
+{
+  return main();
+}
+#endif
+
+#ifdef _HIWIRE_EXTERN_DEDUPLICATE
+
+HwRef
+hiwire_deduplicate_get(__externref_t value)
+{
+  return _hiwire_deduplicate_get(value);
+}
+
+void
+hiwire_deduplicate_set(__externref_t value, HwRef ref)
+{
+  _hiwire_deduplicate_set(value, ref);
+}
+
+void
+hiwire_deduplicate_delete(__externref_t value)
+{
+  _hiwire_deduplicate_delete(value);
+}
+
+#endif
