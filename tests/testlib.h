@@ -31,8 +31,6 @@
     }                                                                          \
   } while (0)
 
-#define ASSERT_EQ(a, b) ASSERT_STR(a == b, #a " == " #b)
-
 #define ASSERT(cond) ASSERT_STR(cond, #cond)
 
 int
