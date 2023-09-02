@@ -1,7 +1,8 @@
-*.o
 *.js
+*.o
 *.wasm
+__pycache__
 build
 dist
+.venv
 .vscode
-__pycache__
