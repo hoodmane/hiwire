@@ -1,6 +1,15 @@
 #include "testlib.h"
 
 // clang-format off
+#ifdef __EMSCRIPTEN__
+#include "emscripten.h"
+#else
+#define EM_JS(ret, name, params, rest...) \
+    __attribute__((import_module("env"), import_name(# name))) \
+    ret name params;
+
+#endif
+
 EM_JS(__externref_t, int_to_ref, (int x), {
     return x;
 })

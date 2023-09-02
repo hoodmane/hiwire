@@ -1,10 +1,11 @@
-#include "emscripten.h"
 #include "hiwire.h"
-#include <stdio.h>
+#include "stdio.h"
 
-EM_JS(__externref_t, js_value, (void), { return { a : 7, b : 5 }; })
+__attribute__((import_module("env"), import_name("print_value"))) 
+void print_value(__externref_t);
 
-EM_JS(void, print_value, (__externref_t o), { console.log(o); })
+__attribute__((import_module("env"), import_name("js_value"))) 
+__externref_t js_value(void);
 
 int
 main()

@@ -1,6 +1,5 @@
 #undef HIWIRE_H
 #undef _STDIO_H
-#include "emscripten.h"
 #include "hiwire.h"
 #include "stdio.h"
 #define HIWIRE_INTERNAL

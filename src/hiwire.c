@@ -63,7 +63,6 @@ hiwire_intern(__externref_t value)
 #endif
   return result;
 }
-#include "stdio.h"
 
 HwRef
 hiwire_new(__externref_t value)
@@ -183,6 +182,7 @@ hiwire_pop(HwRef ref)
   hiwire_decref(ref);
   return value;
 }
+
 
 #ifdef __cplusplus
 }
