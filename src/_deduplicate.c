@@ -4,7 +4,7 @@
 #define _hiwire_deduplicate_delete hiwire_deduplicate_delete
 #endif
 
-#ifdef HIWIRE_EMSCRIPTEN_DEDUPLICATE
+#ifdef _HIWIRE_EMSCRIPTEN_DEDUPLICATE
 #include "emscripten.h"
 
 // clang-format off
@@ -25,7 +25,13 @@ EM_JS(void, _hiwire_deduplicate_delete, (__externref_t value), {
 // clang-format on
 #endif
 
-#ifdef CAN_DEDUPLICATE
+HwRef
+_hiwire_deduplicate_get(__externref_t value);
+void
+_hiwire_deduplicate_set(__externref_t value, HwRef ref);
+void
+_hiwire_deduplicate_delete(__externref_t value);
+
 HwRef
 hiwire_incref_deduplicate(HwRef ref)
 {
@@ -42,4 +48,3 @@ hiwire_incref_deduplicate(HwRef ref)
   hiwire_incref(result);
   return result;
 }
-#endif

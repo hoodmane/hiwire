@@ -1,10 +1,6 @@
 #include "hiwire.h"
 #include "stdalign.h"
 
-#if defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) || defined(HIWIRE_EXTERN_DEDUPLICATE)
-#define CAN_DEDUPLICATE 1
-#endif
-
 _Static_assert(alignof(HwRef) == alignof(int),
                "HwRef should have the same alignment as int.");
 _Static_assert(sizeof(HwRef) == sizeof(int),
@@ -14,7 +10,6 @@ _Static_assert(sizeof(HwRef) == sizeof(int),
 
 #include "compat.c"
 
-#define HIWIRE_INTERNAL
 #include "hiwire_macros.h"
 #include "wasm_table.h"
 
@@ -36,7 +31,9 @@ static struct _hiwire_data_t _hiwire = {
   .slotInfoSize = 0,
 };
 
+#ifdef _HIWIRE_CAN_DEDUPLICATE
 #include "_deduplicate.c"
+#endif
 
 HwRef
 hiwire_intern(__externref_t value)
@@ -47,7 +44,7 @@ hiwire_intern(__externref_t value)
     return NULL;
   }
   HwRef result = IMMORTAL_INDEX_TO_REF(index);
-#if CAN_DEDUPLICATE
+#if _HIWIRE_CAN_DEDUPLICATE
   _hiwire_deduplicate_set(value, result);
 #endif
   return result;
@@ -151,7 +148,7 @@ hiwire_decref(HwRef ref)
   }
   HEAP_DECREF(info);
   if (HEAP_IS_REFCNT_ZERO(info)) {
-#if CAN_DEDUPLICATE
+#if _HIWIRE_CAN_DEDUPLICATE
     if (HEAP_IS_DEDUPLICATED(info)) {
       _hiwire_deduplicate_delete(_hiwire_get(index));
     }

@@ -1,6 +1,8 @@
 #ifndef HIWIRE_H
 #define HIWIRE_H
 
+#include "_hiwire_config.h"
+
 #if !__wasm32__
 #error "Only for wasm32"
 #endif
@@ -8,15 +10,15 @@
 #error "Wasm reference types are required. Compile with -mreference-types."
 #endif
 
-#if defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) && !defined(__EMSCRIPTEN__)
-#error "HIWIRE_EMSCRIPTEN_DEDUPLICATE only works on with Emscripten"
+#if defined(_HIWIRE_EMSCRIPTEN_DEDUPLICATE) && !defined(__EMSCRIPTEN__)
+#error "EMSCRIPTEN_DEDUPLICATE only works on with Emscripten"
 #endif
-#if defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) && defined(HIWIRE_EXTERN_DEDUPLICATE)
-#error                                                                         \
-  "only define one of HIWIRE_EMSCRIPTEN_DEDUPLICATE or HIWIRE_EXTERN_DEDUPLICATE"
+#if defined(_HIWIRE_EMSCRIPTEN_DEDUPLICATE) &&                                 \
+  defined(_HIWIRE_EXTERN_DEDUPLICATE)
+#error "only define one of EMSCRIPTEN_DEDUPLICATE or EXTERN_DEDUPLICATE"
 #endif
-#if defined(HIWIRE_STATIC_PAGES) && defined(HIWIRE_EXTERN_REALLOC)
-#error "only define one of HIWIRE_STATIC_PAGES or HIWIRE_EXTERN_REALLOC"
+#if defined(_HIWIRE_STATIC_PAGES) && defined(_HIWIRE_EXTERN_REALLOC)
+#error "only define one of STATIC_PAGES or EXTERN_REALLOC"
 #endif
 
 #ifdef __cplusplus
@@ -89,6 +91,11 @@ hiwire_decref(HwRef ref);
 __externref_t
 hiwire_pop(HwRef ref);
 
+#if defined(_HIWIRE_EMSCRIPTEN_DEDUPLICATE) ||                                 \
+  defined(_HIWIRE_EXTERN_DEDUPLICATE)
+#define _HIWIRE_CAN_DEDUPLICATE 1
+#endif
+
 /**
  * If ref1 and ref2 point to the same host value, hiwire_incref_deduplicate
  * will return equal values. This can be used to check equality of the host
@@ -96,11 +103,10 @@ hiwire_pop(HwRef ref);
  */
 HwRef
 hiwire_incref_deduplicate(HwRef ref)
-#if !defined(HIWIRE_EMSCRIPTEN_DEDUPLICATE) &&                                 \
-  !defined(HIWIRE_EXTERN_DEDUPLICATE)
-  __attribute__((unavailable(
-    "To use hiwire_incref_deduplicate you must compile with "
-    "-DHIWIRE_EMSCRIPTEN_DEDUPLICATE or -DHIWIRE_EXTERN_DEDUPLICATE")))
+#ifndef _HIWIRE_CAN_DEDUPLICATE
+  __attribute__((
+    unavailable("To use hiwire_incref_deduplicate you must build with "
+                "EMSCRIPTEN_DEDUPLICATE or EXTERN_DEDUPLICATE")))
 #endif
   ;
 

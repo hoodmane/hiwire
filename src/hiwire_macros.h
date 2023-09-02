@@ -1,7 +1,3 @@
-#ifndef HIWIRE_INTERNAL
-#error "private header"
-#endif
-
 // HwRefs are:
 // * heap             if they are odd,
 // * immortal         if they are even

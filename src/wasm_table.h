@@ -1,6 +1,3 @@
-#ifndef HIWIRE_INTERNAL
-#error "private header"
-#endif
 #include "hiwire.h"
 
 __externref_t
