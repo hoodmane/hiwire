@@ -183,7 +183,6 @@ hiwire_pop(HwRef ref)
   return value;
 }
 
-
 #ifdef __cplusplus
 }
 #endif

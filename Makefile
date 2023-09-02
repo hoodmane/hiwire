@@ -22,10 +22,8 @@ dist/lib/libhiwire.a: src/hiwire.o src/wasm_table.o
 		fi \
 	fi
 
--src/wasm_table.o: src/wasm_table.c
+src/wasm_table.o: src/wasm_table.c
 	$(CC) -o $@ -c $< $(CFLAGS) -Isrc/ -fno-PIC
-
-
 
 src/hiwire.o: src/*.c src/*.h
 	$(CC) -c src/hiwire.c -o src/hiwire.o $(CFLAGS) -Isrc/

@@ -1,11 +1,11 @@
 #include "hiwire.h"
 #include "stdio.h"
 
-__attribute__((import_module("env"), import_name("print_value"))) 
-void print_value(__externref_t);
+__attribute__((import_module("env"),
+               import_name("print_value"))) void print_value(__externref_t);
 
-__attribute__((import_module("env"), import_name("js_value"))) 
-__externref_t js_value(void);
+__attribute__((import_module("env"), import_name("js_value"))) __externref_t
+js_value(void);
 
 int
 main()
