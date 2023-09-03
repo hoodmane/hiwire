@@ -1,3 +1,25 @@
+#if defined(_HIWIRE_EMSCRIPTEN_TRACEREFS) || defined(_HIWIRE_EXTERN_TRACEREFS)
+#define TRACEREFS(type, ref)                                                   \
+  _hiwire_traceref(                                                            \
+    type,                                                                      \
+    ref,                                                                       \
+    HEAP_REF_TO_INDEX(ref),                                                    \
+    _hiwire_get(HEAP_REF_TO_INDEX(ref)),                                       \
+    (_hiwire.slotInfo[HEAP_REF_TO_INDEX(ref)] & REFCOUNT_MASK) >> 2)
+
+#if defined(_HIWIRE_EXTERN_TRACEREFS)
+#define _hiwire_traceref hiwire_traceref
+#endif
+void
+_hiwire_traceref(char* type,
+                 HwRef ref,
+                 int index,
+                 __externref_t value,
+                 int refcount);
+#else
+#define TRACEREFS(...)
+#endif
+
 // HwRefs are:
 // * heap             if they are odd,
 // * immortal         if they are even

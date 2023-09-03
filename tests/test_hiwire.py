@@ -112,6 +112,14 @@ def test_extern_realloc(platform):
     run_test(platform, "extern_realloc")
 
 
+@pytest.mark.parametrize("platform", PLATFORMS)
+def test_tracerefs(platform):
+    traceref = "EMSCRIPTEN_TRACEREFS" if platform == "emcc" else "EXTERN_TRACEREFS"
+    make(platform, opts=["STATIC_PAGES=1", traceref])
+    build_test(platform, "tracerefs")
+    run_test(platform, "tracerefs")
+
+
 @pytest.mark.parametrize("test_name", ALL_TESTS)
 def test_emcc_dylink(test_name):
     make("emcc", opts=["EMSCRIPTEN_DEDUPLICATE"])

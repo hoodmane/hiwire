@@ -10,17 +10,6 @@
 #error "Wasm reference types are required. Compile with -mreference-types."
 #endif
 
-#if defined(_HIWIRE_EMSCRIPTEN_DEDUPLICATE) && !defined(__EMSCRIPTEN__)
-#error "EMSCRIPTEN_DEDUPLICATE only works on with Emscripten"
-#endif
-#if defined(_HIWIRE_EMSCRIPTEN_DEDUPLICATE) &&                                 \
-  defined(_HIWIRE_EXTERN_DEDUPLICATE)
-#error "only define one of EMSCRIPTEN_DEDUPLICATE or EXTERN_DEDUPLICATE"
-#endif
-#if defined(_HIWIRE_STATIC_PAGES) && defined(_HIWIRE_EXTERN_REALLOC)
-#error "only define one of STATIC_PAGES or EXTERN_REALLOC"
-#endif
-
 #ifdef __cplusplus
 extern “C”
 {

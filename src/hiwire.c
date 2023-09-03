@@ -1,7 +1,6 @@
 #include "hiwire.h"
 
 #define ALLOC_INCREMENT 1024
-#define TRACEREFS(...)
 #define FAIL_INVALID_ID(ref) // printf("Fail!!\n")
 
 struct _hiwire_data_t
@@ -75,7 +74,9 @@ hiwire_new(__externref_t value)
     // TODO: operation failed...
     return NULL;
   }
-  return HEAP_NEW_REF(index, info);
+  HwRef ref = HEAP_NEW_REF(index, info);
+  TRACEREFS("new", ref);
+  return ref;
 }
 
 // for testing purposes.
@@ -117,8 +118,8 @@ hiwire_incref(HwRef ref)
     return;
   }
   // heap reference
+  TRACEREFS("incref", ref);
   int index = HEAP_REF_TO_INDEX(ref);
-  TRACEREFS("hw.incref", index, ref, _hiwire.objects[index]);
   int info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
     FAIL_INVALID_ID(ref);
@@ -134,6 +135,7 @@ hiwire_decref(HwRef ref)
   if (IS_IMMORTAL(ref)) {
     return;
   }
+  TRACEREFS("decref", ref);
   int index = HEAP_REF_TO_INDEX(ref);
   int info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {

@@ -60,3 +60,16 @@ hiwire_deduplicate_delete(__externref_t value)
 }
 
 #endif
+
+#ifdef _HIWIRE_EXTERN_TRACEREFS
+
+void
+hiwire_traceref(char* type,
+                HwRef ref,
+                int index,
+                __externref_t value,
+                int refcount)
+{
+  extern_hiwire_traceref(type, ref, index, value, refcount);
+}
+#endif

@@ -1,5 +1,22 @@
 #include "stdalign.h"
 
+#if defined(_HIWIRE_EMSCRIPTEN_DEDUPLICATE) && !defined(__EMSCRIPTEN__)
+#error "EMSCRIPTEN_DEDUPLICATE only works with Emscripten"
+#endif
+#if defined(_HIWIRE_EMSCRIPTEN_DEDUPLICATE) &&                                 \
+  defined(_HIWIRE_EXTERN_DEDUPLICATE)
+#error "only define one of EMSCRIPTEN_DEDUPLICATE or EXTERN_DEDUPLICATE"
+#endif
+#if defined(_HIWIRE_STATIC_PAGES) && defined(_HIWIRE_EXTERN_REALLOC)
+#error "only define one of STATIC_PAGES or EXTERN_REALLOC"
+#endif
+#if defined(_HIWIRE_EMSCRIPTEN_TRACEREFS) && !defined(__EMSCRIPTEN__)
+#error "EMSCRIPTEN_TRACEREFS only works with Emscripten"
+#endif
+#if defined(_HIWIRE_EMSCRIPTEN_TRACEREFS) && defined(_HIWIRE_EXTERN_TRACEREFS)
+#error "only define one of EMSCRIPTEN_TRACEREFS or EXTERN_TRACEREFS"
+#endif
+
 _Static_assert(alignof(HwRef) == alignof(int),
                "HwRef should have the same alignment as int.");
 _Static_assert(sizeof(HwRef) == sizeof(int),
@@ -42,3 +59,20 @@ _hiwire_realloc(void* orig, size_t sz)
 
 void*
 _hiwire_realloc(void* orig, size_t sz);
+
+#ifdef _HIWIRE_EMSCRIPTEN_TRACEREFS
+#include "emscripten.h"
+
+// clang-format off
+EM_JS(void,
+_hiwire_traceref,
+(char* type_ptr, HwRef ref, int index, __externref_t value, int refcount),
+{
+  const type = UTF8ToString(type_ptr);
+  console.log("hiwire traceref", { type, ref, index, value, refcount });
+});
+// clang-format on
+
+EM_JS_DEPS(_hiwire_traceref, "$UTF8ToString");
+
+#endif

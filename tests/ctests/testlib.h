@@ -70,6 +70,16 @@ _hiwire_deduplicate_delete(__externref_t value)
 
 #endif
 
+#ifdef _HIWIRE_EXTERN_TRACEREFS
+void
+extern_hiwire_traceref(char* type,
+                       HwRef ref,
+                       int index,
+                       __externref_t value,
+                       int refcount)
+  __attribute__((import_module("env"), import_name("hiwire_traceref")));
+#endif
+
 #if __has_include("stdio.h")
 #include "stdio.h"
 #else

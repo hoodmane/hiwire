@@ -20,6 +20,8 @@ build/_hiwire_config.h:
 		EXTERN_DEDUPLICATE \
 		STATIC_PAGES \
 		EXTERN_REALLOC \
+		EMSCRIPTEN_TRACEREFS \
+		EXTERN_TRACEREFS \
 	; do \
 		echo $${!A+#define _HIWIRE_$$A $${!A}} >> $@ ; \
 	done

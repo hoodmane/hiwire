@@ -76,6 +76,12 @@ class WasmLib:
         mem = self.memory.read(self.store, ptr, ptr + 4)
         return unpack("I", mem)[0]
 
+    @signature("viiiei")
+    def hiwire_traceref(self, type_ptr, ref, index, value, refcount):
+        type = self.decode_str(type_ptr)
+        print("hiwire traceref", f"{{ type: {type!r}, ref: {ref}, index: {index}, value: {value[0]}, refcount: {refcount} }}", file=self.stdout)
+        self.stdout.flush()
+
     @signature("iii")
     def printf(self, x, y):
         fmt = self.decode_str(x)
