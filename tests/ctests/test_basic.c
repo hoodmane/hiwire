@@ -39,5 +39,6 @@ main()
   ASSERT(is_null(hiwire_get(id2)));
   ASSERT(is_null(hiwire_get(id3)));
   ASSERT(is_null(hiwire_get(id4)));
+
   return 0;
 }

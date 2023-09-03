@@ -45,5 +45,6 @@ main()
   ASSERT(id31 == id32);
   ASSERT(id32 == id34);
   ASSERT(id21 != id31);
+
   return 0;
 }

@@ -28,4 +28,6 @@ main()
   ASSERT(ref_to_int(hiwire_get(id1)) == 5);
   ASSERT(ref_to_int(hiwire_get(id2)) == 6);
   ASSERT(ref_to_int(hiwire_get(id3)) == 7);
+
+  return 0;
 }

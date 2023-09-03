@@ -1,0 +1,9 @@
+[94;1mPASS [0m   !SLOT_DEDUPLICATED(id1)
+[94;1mPASS [0m   SLOT_DEDUPLICATED(id1)
+[94;1mPASS [0m   id1 == id2
+[94;1mPASS [0m   id3 == id1
+[94;1mPASS [0m   SLOT_REFCOUNT(id1) == 3
+[94;1mPASS [0m   id4 == id_immortal
+[94;1mPASS [0m   !SLOT_DEDUPLICATED(id5)
+[94;1mPASS [0m   id6 == id_immortal
+[94;1mPASS [0m   SLOT_REFCOUNT(id5) == 1

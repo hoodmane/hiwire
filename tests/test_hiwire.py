@@ -97,6 +97,14 @@ def test_immortal(platform):
     run_test(platform, "immortal")
 
 
+@pytest.mark.parametrize("platform", PLATFORMS)
+def test_immortal_deduplication(platform):
+    dedup = "EMSCRIPTEN_DEDUPLICATE" if platform == "emcc" else "EXTERN_DEDUPLICATE"
+    make(platform, opts=["STATIC_PAGES=1", dedup])
+    build_test(platform, "immortal_deduplication")
+    run_test(platform, "immortal_deduplication")
+
+
 @pytest.mark.parametrize("test_name", ALL_TESTS)
 def test_emcc_dylink(test_name):
     make("emcc", opts=["EMSCRIPTEN_DEDUPLICATE"])

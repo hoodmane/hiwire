@@ -58,5 +58,6 @@ main()
   ASSERT(SLOT_OCCUPIED(id_dup));
 
   ASSERT(ref_to_int(hiwire_get(id3)) == 678);
+
   return 0;
 }
