@@ -69,13 +69,13 @@ if the references point to the same host object. This allows you to use the
 resulting `HwRef` as C map keys and it will index on host object equality.
 
 To use `hiwire_incref_deduplicate` you need to define either
-`HIWIRE_EMSCRIPTEN_DEDUPLICATE` or `HIWIRE_EXTERN_DEDUPLICATE`, see
-compatibility. With `HIWIRE_EXTERN_DEDUPLICATE` you can choose the notion of
-host object equality that is used, with `HIWIRE_EMSCRIPTEN_DEDUPLICATE`, two
+`EMSCRIPTEN_DEDUPLICATE` or `EXTERN_DEDUPLICATE`, see
+compatibility. With `DEDUPLICATE` you can choose the notion of
+host object equality that is used, with `EMSCRIPTEN_DEDUPLICATE`, two
 externrefs are equal if the pointed-to values are `===` to each other.
 
-Note that with `HIWIRE_EMSCRIPTEN_DEDUPLICATE`, `hiwire_incref_deduplicate` is
-~100x slower than the other APIs here and makes freeing the reference also 100x
+Note that with `EMSCRIPTEN_DEDUPLICATE`, `hiwire_incref_deduplicate` is ~100x
+slower than the other APIs here and makes freeing the reference also 100x
 slower.
 
 
@@ -107,16 +107,16 @@ and other types.
 By default, `hiwire` uses `realloc` from the standard library. For
 `wasm32-unknown-unknown` there are three options:
 
-1. Define `-DHIWIRE_STATIC_PAGES=n`. This statically allocates the memory that
+1. Define `STATIC_PAGES=n`. This statically allocates the memory that
    hiwire needs but limits you to having a maximum of n*1024 distinct references
    in total. If you exceed this number, `hiwire_new` will fail by returning
    `NULL`.
 2. Provide an implementation of `realloc` (say by linking a malloc library)
-3. Define `-DHIWIRE_EXTERN_REALLOC` and provide an implementation of
+3. Define `EXTERN_REALLOC` and provide an implementation of
    `hiwire_realloc`.
 
-You can also use `-DHIWIRE_STATIC_PAGES=n` in Emscripten, but the default
-behavior will just use `realloc`
+You can also use `STATIC_PAGES=n` with `wasm32-emscripten` or `wasm32-wasi`, but
+the default behavior will just use `realloc`
 
 `hiwire_incref_deduplicate` also needs extra runtime support. You can define
 `HIWIRE_EMSCRIPTEN_DEDUPLICATE` (Emscripten only) which will use `EM_JS`
