@@ -107,6 +107,10 @@ To use wasi-libc with clang-17 you either need tip of tree unreleased wasi-libc
 or to apply [this patch](patches/wasi-libc-clang-17-compat.patch) to wasi-libc
 version 20.
 
+To use Emscripten with dynamic linking, you'll need to apply
+[this patch](patches/emcc-emjs-dylink-externref.patch) to Emscripten version
+3.1.45.
+
 ## Compiler flags
 
 To use `__externref_t` you must compile with `-mreference-types`. I also
