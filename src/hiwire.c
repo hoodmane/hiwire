@@ -10,6 +10,7 @@ struct _hiwire_data_t
   int* slotInfo;
   int slotInfoSize;
   int numKeys;
+  int immortalInitialized;
 };
 
 static struct _hiwire_data_t _hiwire = {
@@ -17,6 +18,7 @@ static struct _hiwire_data_t _hiwire = {
   .slotInfo = 0,
   .numKeys = 0,
   .slotInfoSize = 0,
+  .immortalInitialized = 0,
 };
 
 #include "hiwire_macros.h"
@@ -28,13 +30,16 @@ static struct _hiwire_data_t _hiwire = {
 HwRef
 hiwire_intern(__externref_t value)
 {
+  if (!_hiwire.immortalInitialized) {
+    _hiwire.immortalInitialized = 1;
+    _hiwire_immortal_add(__builtin_wasm_ref_null_extern());
+  }
   int index = _hiwire_immortal_add(value);
   if (index == -1) {
     // TODO: operation failed..
     return NULL;
   }
   HwRef result = IMMORTAL_INDEX_TO_REF(index);
-  _hiwire_deduplicate_set(value, result);
   return result;
 }
 
@@ -44,6 +49,7 @@ hiwire_new(__externref_t value)
   int index = _hiwire.freeHead;
   if (_hiwire.slotInfoSize == 0) {
     _hiwire_table_init();
+    deduplicate_init();
   }
   int needed_size = sizeof(int[index + 1]);
   int orig_size = sizeof(int[_hiwire.slotInfoSize]);
