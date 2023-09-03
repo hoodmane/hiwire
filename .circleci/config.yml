@@ -1,0 +1,26 @@
+version: 2.1
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: hoodmane/hiwire-env:1
+
+
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: run tests
+          no_output_timeout: 1200
+          command: |
+            source /emsdk-3.1.45/emsdk_env.sh
+            pytest
+
+
+workflows:
+  version: 2.1
+  test:
+    jobs:
+      - test
