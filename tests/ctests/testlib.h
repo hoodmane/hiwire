@@ -76,4 +76,5 @@ _hiwire_deduplicate_delete(__externref_t value)
 int
 printf(const char*, ...)
   __attribute__((import_module("env"), import_name("printf")));
+#define NULL (void*)(0)
 #endif
