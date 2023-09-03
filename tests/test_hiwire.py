@@ -98,7 +98,7 @@ def test_immortal(platform):
 
 
 @pytest.mark.parametrize("test_name", ALL_TESTS)
-def test_dylink(test_name):
+def test_emcc_dylink(test_name):
     make("emcc", opts=["EMSCRIPTEN_DEDUPLICATE"])
     run_process(
         [

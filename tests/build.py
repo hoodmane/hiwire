@@ -45,6 +45,7 @@ def build_test_inner(
     cflags: list[str] | None = None,
     ldflags: list[str] | None = None,
 ):
+    build_dir.mkdir(exist_ok=True)
     cflags = list(cflags) if cflags else []
     ldflags = list(ldflags) if cflags else []
     cflags += [
@@ -99,9 +100,12 @@ def build_test_emcc(test_name: str, optflags=None, build_dir=TEST_DIR / "build")
 WASI_TARGET_FLAGS = [
     "-target",
     "wasm32-wasi",
-    "--sysroot",
-    "/home/hood/Documents/programming/wasi-libc/sysroot",
 ]
+if "WASI_SYSROOT" in os.environ:
+    WASI_TARGET_FLAGS += [
+        "--sysroot",
+        os.environ["WASI_SYSROOT"],
+    ]
 
 
 def wasi_cc(optflags):
