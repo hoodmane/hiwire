@@ -30,9 +30,7 @@ EM_JS(void, __hiwire_deduplicate_delete, (__externref_t map, __externref_t value
 static void
 deduplicate_init()
 {
-  if (_deduplicate_map == NULL) {
-    _deduplicate_map = hiwire_intern(__hiwire_deduplicate_new());
-  }
+  _deduplicate_map = hiwire_intern(__hiwire_deduplicate_new());
 }
 
 static HwRef
