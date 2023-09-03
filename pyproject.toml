@@ -1,0 +1,35 @@
+[tool.ruff]
+select = [
+  "B0",     # bugbear (all B0* checks enabled by default)
+  "B904",   # bugbear (Within an except clause, raise exceptions with raise ... from err)
+  "B905",   # bugbear (zip() without an explicit strict= parameter set.)
+  "C9",     # mccabe complexity
+  "E",      # pycodestyles
+  "W",      # pycodestyles
+  "F",      # pyflakes
+  "I",      # isort
+  "PGH",    # pygrep-hooks
+  "PLC",    # pylint conventions
+  "PLE",    # pylint errors
+  "UP",     # pyupgrade
+]
+ignore = ["E402", "E501", "E731", "E741"]
+# line-length = 219  # E501: Recommended goal is 88 to match black
+target-version = "py311"
+
+[tool.ruff.per-file-ignores]
+"src/py/_pyodide/_base.py" = [
+  "PGH001",  # No builtin `eval()` allowed
+]
+"src/tests/test_jsproxy.py" = [
+  "PGH001",  # No builtin `eval()` allowed
+]
+"src/tests/test_typeconversions.py" = [
+  "PGH001",  # No builtin `eval()` allowed
+]
+"tools/*" = [
+  "B008",  # Do not perform function call `typer.Optional` in argument defaults
+]
+
+[tool.ruff.flake8-bugbear]
+extend-immutable-calls = ["typer.Argument", "typer.Option"]

@@ -1,6 +1,6 @@
+import os
 import subprocess
 from pathlib import Path
-import os
 
 TEST_DIR = Path(__file__).parent
 ROOT_DIR = TEST_DIR.parent
