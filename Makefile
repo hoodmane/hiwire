@@ -35,11 +35,11 @@ dist/include/_hiwire_config.h: build/_hiwire_config.h
 
 dist/lib/libhiwire.a: build/hiwire.o build/wasm_table.o
 	mkdir -p dist/lib
-	if type emar > /dev/null ; then \
+	if type emar > /dev/null 2>&1 ; then \
 		emar rcs $@ $(filter %.o,$^) ; \
 	else \
 		ar rcs $@ $(filter %.o,$^) ; \
-		if type llvm-ranlib  > /dev/null ; then \
+		if type llvm-ranlib > /dev/null 2>&1 ; then \
 			llvm-ranlib $@ ; \
 		fi \
 	fi
