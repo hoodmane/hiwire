@@ -78,3 +78,5 @@ printf(const char*, ...)
   __attribute__((import_module("env"), import_name("printf")));
 #define NULL (void*)(0)
 #endif
+
+typedef unsigned long size_t;

@@ -105,6 +105,13 @@ def test_immortal_deduplication(platform):
     run_test(platform, "immortal_deduplication")
 
 
+@pytest.mark.parametrize("platform", PLATFORMS)
+def test_extern_realloc(platform):
+    make(platform, opts=["EXTERN_REALLOC"])
+    build_test(platform, "extern_realloc")
+    run_test(platform, "extern_realloc")
+
+
 @pytest.mark.parametrize("test_name", ALL_TESTS)
 def test_emcc_dylink(test_name):
     make("emcc", opts=["EMSCRIPTEN_DEDUPLICATE"])

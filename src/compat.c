@@ -38,6 +38,7 @@ _hiwire_realloc(void* orig, size_t sz)
 #define _hiwire_realloc hiwire_realloc
 #else
 #define _hiwire_realloc realloc
-void*
-realloc(void* orig, size_t sz);
 #endif
+
+void*
+_hiwire_realloc(void* orig, size_t sz);
