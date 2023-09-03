@@ -13,7 +13,7 @@ RUN echo "deb https://apt.llvm.org/buster llvm-toolchain-buster-17 main" \
     wget -qO /etc/apt/trusted.gpg.d/llvm.asc \
         https://apt.llvm.org/llvm-snapshot.gpg.key && \
     apt-get -qq update && \
-    apt-get install -qqy clang-17 lld-17 && \
+    apt-get install -qqy clang-17 lld-17 libclang-rt-17-dev-wasm32 && \
     for f in /usr/lib/llvm-17/bin/*; do ln -sf "$f" /usr/bin; done && \
     rm -rf /var/lib/apt/lists/*
 
@@ -23,9 +23,9 @@ RUN wget https://github.com/WebAssembly/wasi-libc/archive/refs/tags/wasi-sdk-20.
         tar -xf wasi-sdk-20.tar.gz && rm wasi-sdk-20.tar.gz && \
         patch -p1 -d /wasi-libc-wasi-sdk-20 -i /wasi-libc-clang-17-compat.patch && \
         INSTALL_DIR=/usr make -C /wasi-libc-wasi-sdk-20 install && \
-        rm -rf /wasi-libc-wasi-sdk-20 && \
-    wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-20/libclang_rt.builtins-wasm32-wasi-20.0.tar.gz && \
-    tar -xf libclang_rt.builtins-wasm32-wasi-20.0.tar.gz -C/usr/lib/llvm-17/lib/clang/17/ && rm libclang_rt.builtins-wasm32-wasi-20.0.tar.gz
+        rm -rf /wasi-libc-wasi-sdk-20
+
+RUN llvm-ranlib /usr/lib/llvm-17/lib/clang/17/lib/wasi/libclang_rt.builtins-wasm32.a
 
 RUN wget https://github.com/emscripten-core/emsdk/archive/refs/tags/3.1.45.tar.gz && \
     tar -xf 3.1.45.tar.gz && rm 3.1.45.tar.gz && \

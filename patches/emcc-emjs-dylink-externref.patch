@@ -3,6 +3,8 @@ From: Hood Chatham <roberthoodchatham@gmail.com>
 Date: Thu, 31 Aug 2023 13:53:39 +0200
 Subject: [PATCH] Support externref in EM_JS functions with dynamic linking
 
+https://github.com/emscripten-core/emscripten/pull/20171
+
 ---
  emscripten.py                 |  1 +
  src/library_addfunction.js    |  1 +
