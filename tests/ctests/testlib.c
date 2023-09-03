@@ -31,6 +31,12 @@ _start()
 {
   return main();
 }
+
+int
+puts(const char* x)
+{
+  return printf("%s\n", x);
+}
 #endif
 
 #ifdef _HIWIRE_EXTERN_DEDUPLICATE

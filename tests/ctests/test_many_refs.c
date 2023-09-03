@@ -11,7 +11,7 @@ main()
   for (int i = 0; i < 5000; i++) {
     if (ref_to_int(hiwire_get(refs[i])) != offset + i) {
       printf(FAIL_STR "\n");
-      return -1;
+      return 1;
     }
   }
   printf(PASS_STR "\n");
@@ -25,7 +25,7 @@ main()
   for (int i = 0; i < 5000; i++) {
     if (ref_to_int(hiwire_get(refs[i])) != offset + 2 * i) {
       printf(FAIL_STR "\n");
-      return -1;
+      return 1;
     }
   }
   printf(PASS_STR "\n");

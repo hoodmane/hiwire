@@ -3,7 +3,7 @@
 #include "hiwire.h"
 
 #define HIWIRE_INTERNAL
-#include "../src/hiwire_macros.h"
+#include "hiwire_macros.h"
 #undef HIWIRE_INTERNAL
 
 #define INFO_IS_OCCUPIED(info) ((info)&OCCUPIED_BIT)

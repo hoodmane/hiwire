@@ -1,0 +1,31 @@
+[94;1mPASS [0m   HEAP_REF_TO_INDEX(id1) == 1
+[94;1mPASS [0m   REF_VERSION(id1) == 0
+[94;1mPASS [0m   SLOT_VERSION(id1) == 0
+[94;1mPASS [0m   SLOT_REFCOUNT(id1) == 1
+[94;1mPASS [0m   SLOT_OCCUPIED(id1)
+[94;1mPASS [0m   ref_to_int(hiwire_get(id1)) == 7
+[94;1mPASS [0m   SLOT_VERSION(id1) == 1
+[94;1mPASS [0m   !SLOT_OCCUPIED(id1)
+[94;1mPASS [0m   is_null(hiwire_get(id1))
+[94;1mPASS [0m   HEAP_REF_TO_INDEX(id2) == 1
+[94;1mPASS [0m   REF_VERSION(id2) == 1
+[94;1mPASS [0m   SLOT_VERSION(id2) == 1
+[94;1mPASS [0m   SLOT_REFCOUNT(id2) == 1
+[94;1mPASS [0m   SLOT_OCCUPIED(id2)
+[94;1mPASS [0m   ref_to_int(hiwire_get(id2)) == 8
+[94;1mPASS [0m   is_null(hiwire_get(id1))
+[94;1mPASS [0m   HEAP_REF_TO_INDEX(id3) == 1
+[94;1mPASS [0m   REF_VERSION(id4) == 52
+[94;1mPASS [0m   SLOT_VERSION(id4) == 52
+[94;1mPASS [0m   SLOT_REFCOUNT(id4) == 1
+[94;1mPASS [0m   SLOT_OCCUPIED(id4)
+[94;1mPASS [0m   ref_to_int(hiwire_get(id4)) == 59
+[94;1mPASS [0m   is_null(hiwire_get(id3))
+[94;1mPASS [0m   is_null(hiwire_get(id2))
+[94;1mPASS [0m   is_null(hiwire_get(id1))
+[94;1mPASS [0m   HEAP_REF_TO_INDEX(id_dup) == 1
+[94;1mPASS [0m   REF_VERSION(id_dup) == 2
+[94;1mPASS [0m   SLOT_VERSION(id_dup) == 2
+[94;1mPASS [0m   SLOT_REFCOUNT(id_dup) == 1
+[94;1mPASS [0m   SLOT_OCCUPIED(id_dup)
+[94;1mPASS [0m   ref_to_int(hiwire_get(id3)) == 678
