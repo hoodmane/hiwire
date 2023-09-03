@@ -88,11 +88,24 @@ reference count of 2^24 = 16,777,216.
 ## Compiler requirements
 
 Requires either Emscripten >= 3.1.42 or clang more recent than June 10th 2023.
+Specifically, we need clang to include [this
+commit](https://github.com/llvm/llvm-project/commit/55aeb23fe0084d930ecd7335092d712bd71694c7).
 As of this writing, no stable clang has been released since June 10th, but
-17.0.0-rc1 is a candidate. Also, to be able to use this you need to compile with
-`-mreference-types`.
+17.0.0-rc3 is a candidate.
 
-Specifically, we need clang to include [this commit](https://github.com/llvm/llvm-project/commit/55aeb23fe0084d930ecd7335092d712bd71694c7).
+It's possible to install clang-17 from apt on debian. You need to install the
+packages `clang-17`, `lld-17`, and `libclang-rt-17-dev-wasm32`. Annoyingly, the
+archive `libclang_rt.builtins-wasm32.a` that Debian provides is missing an index
+but `wasm-ld` refuses to link archives without indexes. To add an index, run
+```sh
+llvm-ranlib /usr/lib/llvm-17/lib/clang/17/lib/wasi/libclang_rt.builtins-wasm32.a
+```
+See the instructions [here](https://apt.llvm.org/) or the
+[Dockerfile](./Dockerfile).
+
+To use wasi-libc with clang-17 you either need tip of tree unreleased wasi-libc
+or to apply [this patch](patches/wasi-libc-clang-17-compat.patch) to wasi-libc
+version 20.
 
 ## Compiler flags
 
