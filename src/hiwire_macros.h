@@ -84,7 +84,7 @@ _hiwire_traceref(char* type,
 #define VERSION_SHIFT 26
 #define VERSION_MASK (((uint)(-1)) << VERSION_SHIFT)
 
-_Static_assert(VERSION_MASK == 0xFc000000         , "oops!");
+_Static_assert(VERSION_MASK == 0xFc000000, "oops!");
 
 #define VERSION_OCCUPIED_MASK (VERSION_MASK | OCCUPIED_BIT)
 #define REFCOUNT_MASK (~(VERSION_MASK | OCCUPIED_BIT | DEDUPLICATED_BIT))

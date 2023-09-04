@@ -82,7 +82,10 @@ class WasmLib:
     @signature("viiiei")
     def hiwire_traceref(self, type_ptr, ref, index, value, refcount):
         type = self.decode_str(type_ptr)
-        self.print("hiwire traceref", f"{{ type: {type!r}, ref: {ref}, index: {index}, value: {value[0]}, refcount: {refcount} }}")
+        self.print(
+            "hiwire traceref",
+            f"{{ type: {type!r}, ref: {ref}, index: {index}, value: {value[0]}, refcount: {refcount} }}",
+        )
         self.stdout.flush()
 
     @signature("iii")
