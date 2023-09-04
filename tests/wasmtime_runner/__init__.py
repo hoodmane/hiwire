@@ -42,8 +42,13 @@ def run(path, include_wasi):
         memory = exports["memory"]
         lib.set_store(store)
         lib.set_memory(memory)
-        result = main(store)
-        if result:
-            raise ExitTrap(f"Exited with i32 exit status {result}")
+        try:
+            result = main(store)
+            if result:
+                raise ExitTrap(f"Exited with i32 exit status {result}")
+        except Exception:
+            f.flush()
+            print(path.read_text())
+            raise
         f.flush()
         return path.read_text()
