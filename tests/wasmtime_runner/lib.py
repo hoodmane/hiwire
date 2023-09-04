@@ -59,13 +59,16 @@ class WasmLib:
                 continue
             linker.define_func("env", v.__name__, v._wasm_signature, v)
 
+    def print(self, *args, **kwargs):
+        print(*args, **kwargs, file=self.stdout)
+
     @signature("e")
     def js_value(self):
         return {"a": 7}
 
     @signature("ve")
     def print_value(self, o):
-        print(o, file=self.stdout)
+        self.print(o)
 
     def decode_str(self, ptr):
         mem = self.memory.read(self.store, ptr, ptr + 100)
@@ -79,7 +82,7 @@ class WasmLib:
     @signature("viiiei")
     def hiwire_traceref(self, type_ptr, ref, index, value, refcount):
         type = self.decode_str(type_ptr)
-        print("hiwire traceref", f"{{ type: {type!r}, ref: {ref}, index: {index}, value: {value[0]}, refcount: {refcount} }}", file=self.stdout)
+        self.print("hiwire traceref", f"{{ type: {type!r}, ref: {ref}, index: {index}, value: {value[0]}, refcount: {refcount} }}")
         self.stdout.flush()
 
     @signature("iii")
@@ -98,7 +101,7 @@ class WasmLib:
             print("Unknown fchar", fchar)
             raise Exception("oops!")
         result = fmt % tuple(repls)
-        print(result, end="", file=self.stdout)
+        self.print(result, end="")
         return len(result)
 
     @signature("ie")
