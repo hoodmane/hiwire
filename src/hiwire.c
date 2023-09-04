@@ -55,6 +55,9 @@ hiwire_new(__externref_t value)
   uint needed_size = sizeof(uint[index + 1]);
   uint orig_size = sizeof(uint[_hiwire.slotInfoSize]);
   if (needed_size > orig_size) {
+    if (index > MAX_INDEX) {
+      return NULL;
+    }
     uint new_size = sizeof(uint[_hiwire.slotInfoSize + ALLOC_INCREMENT]);
     uint* newSlotInfo = _hiwire_realloc(_hiwire.slotInfo, new_size);
     if (!newSlotInfo) {
