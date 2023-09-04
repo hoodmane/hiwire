@@ -74,24 +74,22 @@ _hiwire_traceref(char* type,
 // Deduplicated HwRefs are ~50x more expensive to allocate/deallocate.
 // clang-format on
 
-#define VERSION_SHIFT                                                          \
-  26 // 1 occupied bit, 25 bits of index/nextfree/refcount, then the version
-#define INDEX_MASK 0x03FFFFFE            // mask for index/nextfree
-#define REFCOUNT_MASK 0x03FFFFFC         // mask for refcount
-#define VERSION_OCCUPIED_MASK 0xFc000001 // mask for version and occupied bit
-#define VERSION_MASK 0xFc000000          // mask for version
-#define OCCUPIED_BIT 1                   // occupied bit mask
-#define DEDUPLICATED_BIT 2 // is it deduplicated? (used for HwRefs)
-#define REFCOUNT_INTERVAL                                                      \
-  4 // The refcount starts after OCCUPIED_BIT and DEDUPLICATED_BIT
-#define NEW_INFO_FLAGS 5 // REFCOUNT_INTERVAL | OCCUPIED_BIT
+// 1 occupied bit, 25 bits of index/nextfree/refcount, then the version
+#define OCCUPIED_BIT (1 << 0)
+#define DEDUPLICATED_BIT (1 << 1)
+#define REFCOUNT_INTERVAL (1 << 2)
 
-// Check that the constants are internally consistent
-_Static_assert(INDEX_MASK == ((1 << VERSION_SHIFT) - 2), "Oops!");
-_Static_assert((REFCOUNT_MASK | DEDUPLICATED_BIT) == INDEX_MASK, "Oops!");
-_Static_assert(VERSION_OCCUPIED_MASK == (~INDEX_MASK), "Oops!");
-_Static_assert(VERSION_OCCUPIED_MASK == (VERSION_MASK | OCCUPIED_BIT), "Oops!");
-_Static_assert(NEW_INFO_FLAGS == (REFCOUNT_INTERVAL | OCCUPIED_BIT), "Oops");
+#define VERSION_SHIFT 26
+#define VERSION_MASK (((unsigned int)(-1)) << VERSION_SHIFT)
+
+_Static_assert(VERSION_MASK == 0xFc000000         , "oops!");
+
+#define VERSION_OCCUPIED_MASK (VERSION_MASK | OCCUPIED_BIT)
+#define REFCOUNT_MASK (~(VERSION_MASK | OCCUPIED_BIT | DEDUPLICATED_BIT))
+#define INDEX_MASK (~(VERSION_MASK | OCCUPIED_BIT))
+#define MAX_INDEX (INDEX_MASK >> 1)
+
+#define NEW_INFO_FLAGS (REFCOUNT_INTERVAL | OCCUPIED_BIT)
 
 #define HEAP_REF_TO_INDEX(ref) ((((int)(ref)) & INDEX_MASK) >> 1)
 #define HEAP_INFO_TO_NEXTFREE(info) HEAP_REF_TO_INDEX(info)
