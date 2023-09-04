@@ -4,14 +4,15 @@
 
 static __externref_t _hiwire_table[0];
 static __externref_t _hiwire_immortal_table[0];
+typedef unsigned int uint;
 
 __externref_t
-_hiwire_immortal_get(int index)
+_hiwire_immortal_get(uint index)
 {
   return __builtin_wasm_table_get(_hiwire_immortal_table, index);
 }
 
-int
+uint
 _hiwire_immortal_add(__externref_t value)
 {
   return __builtin_wasm_table_grow(_hiwire_immortal_table, value, 1);
@@ -30,22 +31,22 @@ _hiwire_immortal_table_init(void)
 }
 
 __externref_t
-_hiwire_get(int index)
+_hiwire_get(uint index)
 {
   return __builtin_wasm_table_get(_hiwire_table, index);
 }
 
 void
-_hiwire_delete(int index)
+_hiwire_delete(uint index)
 {
   __builtin_wasm_table_set(
     _hiwire_table, index, __builtin_wasm_ref_null_extern());
 }
 
-int
-_hiwire_set(int index, __externref_t value)
+uint
+_hiwire_set(uint index, __externref_t value)
 {
-  int table_size = __builtin_wasm_table_size(_hiwire_table);
+  uint table_size = __builtin_wasm_table_size(_hiwire_table);
   if (index == table_size) {
     return __builtin_wasm_table_grow(_hiwire_table, value, 1);
   }

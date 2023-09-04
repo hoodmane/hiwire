@@ -17,9 +17,9 @@
 #error "only define one of EMSCRIPTEN_TRACEREFS or EXTERN_TRACEREFS"
 #endif
 
-_Static_assert(alignof(HwRef) == alignof(int),
+_Static_assert(alignof(HwRef) == alignof(uint),
                "HwRef should have the same alignment as int.");
-_Static_assert(sizeof(HwRef) == sizeof(int),
+_Static_assert(sizeof(HwRef) == sizeof(uint),
                "HwRef should have the same size as int.");
 
 #if __has_include("stdlib.h")
@@ -42,11 +42,11 @@ typedef unsigned long size_t;
 
 #if defined(_HIWIRE_STATIC_PAGES)
 // provide a static realloc on request
-int _table[_HIWIRE_STATIC_PAGES * ALLOC_INCREMENT];
+uint _table[_HIWIRE_STATIC_PAGES * ALLOC_INCREMENT];
 static inline void*
 _hiwire_realloc(void* orig, size_t sz)
 {
-  if (sz <= _HIWIRE_STATIC_PAGES * ALLOC_INCREMENT * sizeof(int)) {
+  if (sz <= _HIWIRE_STATIC_PAGES * ALLOC_INCREMENT * sizeof(uint)) {
     return _table;
   }
   return 0;
@@ -66,7 +66,7 @@ _hiwire_realloc(void* orig, size_t sz);
 // clang-format off
 EM_JS(void,
 _hiwire_traceref,
-(char* type_ptr, HwRef ref, int index, __externref_t value, int refcount),
+(char* type_ptr, HwRef ref, uint index, __externref_t value, uint refcount),
 {
   const type = UTF8ToString(type_ptr);
   console.log("hiwire traceref", { type, ref, index, value, refcount });

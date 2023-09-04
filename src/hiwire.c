@@ -3,13 +3,15 @@
 #define ALLOC_INCREMENT 1024
 #define FAIL_INVALID_ID(ref) // printf("Fail!!\n")
 
+typedef unsigned int uint;
+
 struct _hiwire_data_t
 {
-  int freeHead;
-  int* slotInfo;
-  int slotInfoSize;
-  int numKeys;
-  int immortalInitialized;
+  uint freeHead;
+  uint* slotInfo;
+  uint slotInfoSize;
+  uint numKeys;
+  uint immortalInitialized;
 };
 
 static struct _hiwire_data_t _hiwire = {
@@ -33,7 +35,7 @@ hiwire_intern(__externref_t value)
     _hiwire.immortalInitialized = 1;
     _hiwire_immortal_add(__builtin_wasm_ref_null_extern());
   }
-  int index = _hiwire_immortal_add(value);
+  uint index = _hiwire_immortal_add(value);
   if (index == -1) {
     // TODO: operation failed..
     return NULL;
@@ -45,16 +47,16 @@ hiwire_intern(__externref_t value)
 HwRef
 hiwire_new(__externref_t value)
 {
-  int index = _hiwire.freeHead;
+  uint index = _hiwire.freeHead;
   if (_hiwire.slotInfoSize == 0) {
     _hiwire_table_init();
     deduplicate_init();
   }
-  int needed_size = sizeof(int[index + 1]);
-  int orig_size = sizeof(int[_hiwire.slotInfoSize]);
+  uint needed_size = sizeof(uint[index + 1]);
+  uint orig_size = sizeof(uint[_hiwire.slotInfoSize]);
   if (needed_size > orig_size) {
-    int new_size = sizeof(int[_hiwire.slotInfoSize + ALLOC_INCREMENT]);
-    int* newSlotInfo = _hiwire_realloc(_hiwire.slotInfo, new_size);
+    uint new_size = sizeof(uint[_hiwire.slotInfoSize + ALLOC_INCREMENT]);
+    uint* newSlotInfo = _hiwire_realloc(_hiwire.slotInfo, new_size);
     if (!newSlotInfo) {
       // TODO: fatal?
       return NULL;
@@ -64,7 +66,7 @@ hiwire_new(__externref_t value)
     _hiwire.slotInfo = newSlotInfo;
   }
   _hiwire.numKeys++;
-  int info = _hiwire.slotInfo[index];
+  uint info = _hiwire.slotInfo[index];
   _hiwire.freeHead = HEAP_INFO_TO_NEXTFREE(info);
   if (_hiwire.freeHead == 0) {
     _hiwire.freeHead = _hiwire.numKeys + 1;
@@ -80,14 +82,14 @@ hiwire_new(__externref_t value)
 }
 
 // for testing purposes.
-int
+uint
 _hiwire_num_keys(void)
 {
   return _hiwire.numKeys;
 }
 
-int
-_hiwire_slot_info(int index)
+uint
+_hiwire_slot_info(uint index)
 {
   return _hiwire.slotInfo[index];
 };
@@ -102,8 +104,8 @@ hiwire_get(HwRef ref)
   if (IS_IMMORTAL(ref)) {
     return _hiwire_immortal_get(IMMORTAL_REF_TO_INDEX(ref));
   }
-  int index = HEAP_REF_TO_INDEX(ref);
-  int info = _hiwire.slotInfo[index];
+  uint index = HEAP_REF_TO_INDEX(ref);
+  uint info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
     FAIL_INVALID_ID(ref);
     return __builtin_wasm_ref_null_extern();
@@ -119,8 +121,8 @@ hiwire_incref(HwRef ref)
   }
   // heap reference
   TRACEREFS("incref", ref);
-  int index = HEAP_REF_TO_INDEX(ref);
-  int info = _hiwire.slotInfo[index];
+  uint index = HEAP_REF_TO_INDEX(ref);
+  uint info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
     FAIL_INVALID_ID(ref);
     return;
@@ -136,8 +138,8 @@ hiwire_decref(HwRef ref)
     return;
   }
   TRACEREFS("decref", ref);
-  int index = HEAP_REF_TO_INDEX(ref);
-  int info = _hiwire.slotInfo[index];
+  uint index = HEAP_REF_TO_INDEX(ref);
+  uint info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
     FAIL_INVALID_ID(ref);
     return;

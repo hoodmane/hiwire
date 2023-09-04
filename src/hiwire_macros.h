@@ -1,3 +1,5 @@
+typedef unsigned int uint;
+
 #if defined(_HIWIRE_EMSCRIPTEN_TRACEREFS) || defined(_HIWIRE_EXTERN_TRACEREFS)
 #define TRACEREFS(type, ref)                                                   \
   _hiwire_traceref(                                                            \
@@ -13,9 +15,9 @@
 void
 _hiwire_traceref(char* type,
                  HwRef ref,
-                 int index,
+                 uint index,
                  __externref_t value,
-                 int refcount);
+                 uint refcount);
 #else
 #define TRACEREFS(...)
 #endif
@@ -25,8 +27,8 @@ _hiwire_traceref(char* type,
 // * immortal         if they are even
 //
 // Note that "NULL" is immortal which is important.
-#define IS_IMMORTAL(ref) ((((int)(ref)) & 1) == 0)
-#define IMMORTAL_REF_TO_INDEX(ref) (((int)(ref)) >> 1)
+#define IS_IMMORTAL(ref) ((((uint)(ref)) & 1) == 0)
+#define IMMORTAL_REF_TO_INDEX(ref) (((uint)(ref)) >> 1)
 #define IMMORTAL_INDEX_TO_REF(index) ((HwRef)((index) << 1))
 
 // clang-format off
@@ -80,7 +82,7 @@ _hiwire_traceref(char* type,
 #define REFCOUNT_INTERVAL (1 << 2)
 
 #define VERSION_SHIFT 26
-#define VERSION_MASK (((unsigned int)(-1)) << VERSION_SHIFT)
+#define VERSION_MASK (((uint)(-1)) << VERSION_SHIFT)
 
 _Static_assert(VERSION_MASK == 0xFc000000         , "oops!");
 
@@ -91,14 +93,14 @@ _Static_assert(VERSION_MASK == 0xFc000000         , "oops!");
 
 #define NEW_INFO_FLAGS (REFCOUNT_INTERVAL | OCCUPIED_BIT)
 
-#define HEAP_REF_TO_INDEX(ref) ((((int)(ref)) & INDEX_MASK) >> 1)
+#define HEAP_REF_TO_INDEX(ref) ((((uint)(ref)) & INDEX_MASK) >> 1)
 #define HEAP_INFO_TO_NEXTFREE(info) HEAP_REF_TO_INDEX(info)
 
 // The ref is always odd so this is truthy if info is even (meaning unoccupied)
 // or info has a different version than ref. Masking removes the bits that form
 // the index in the reference and the refcount/next free index in the info.
 #define HEAP_REF_IS_OUT_OF_DATE(ref, info)                                     \
-  ((((int)(ref)) ^ (info)) & VERSION_OCCUPIED_MASK)
+  ((((uint)(ref)) ^ (info)) & VERSION_OCCUPIED_MASK)
 
 #define HEAP_IS_REFCNT_ZERO(info) (!((info)&REFCOUNT_MASK))
 #define HEAP_IS_DEDUPLICATED(info) ((info)&DEDUPLICATED_BIT)
