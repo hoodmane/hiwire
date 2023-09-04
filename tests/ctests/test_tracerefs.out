@@ -1,18 +1,18 @@
-[94;1mPASS [0m   _hiwire_num_keys() == 0
+[94;1mPASS [0m   hiwire_num_refs() == 0
 hiwire traceref { type: 'new', ref: 3, index: 1, value: 5, refcount: 1 }
-[94;1mPASS [0m   _hiwire_num_keys() == 1
+[94;1mPASS [0m   hiwire_num_refs() == 1
 hiwire traceref { type: 'new', ref: 5, index: 2, value: 7, refcount: 1 }
-[94;1mPASS [0m   _hiwire_num_keys() == 2
+[94;1mPASS [0m   hiwire_num_refs() == 2
 hiwire traceref { type: 'new', ref: 7, index: 3, value: 10, refcount: 1 }
-[94;1mPASS [0m   _hiwire_num_keys() == 3
+[94;1mPASS [0m   hiwire_num_refs() == 3
 hiwire traceref { type: 'new', ref: 9, index: 4, value: 12, refcount: 1 }
-[94;1mPASS [0m   _hiwire_num_keys() == 4
+[94;1mPASS [0m   hiwire_num_refs() == 4
 [94;1mPASS [0m   ref_to_int(hiwire_get(id1)) == 5
 [94;1mPASS [0m   ref_to_int(hiwire_get(id2)) == 7
 [94;1mPASS [0m   ref_to_int(hiwire_get(id3)) == 10
 [94;1mPASS [0m   ref_to_int(hiwire_get(id4)) == 12
 hiwire traceref { type: 'decref', ref: 3, index: 1, value: 5, refcount: 1 }
-[94;1mPASS [0m   _hiwire_num_keys() == 3
+[94;1mPASS [0m   hiwire_num_refs() == 3
 [94;1mPASS [0m   is_null(hiwire_get(id1))
 [94;1mPASS [0m   ref_to_int(hiwire_get(id2)) == 7
 [94;1mPASS [0m   ref_to_int(hiwire_get(id3)) == 10
@@ -22,11 +22,11 @@ hiwire traceref { type: 'decref', ref: 7, index: 3, value: 10, refcount: 1 }
 [94;1mPASS [0m   ref_to_int(hiwire_get(id2)) == 7
 [94;1mPASS [0m   is_null(hiwire_get(id3))
 [94;1mPASS [0m   ref_to_int(hiwire_get(id4)) == 12
-[94;1mPASS [0m   _hiwire_num_keys() == 2
+[94;1mPASS [0m   hiwire_num_refs() == 2
 hiwire traceref { type: 'decref', ref: 5, index: 2, value: 7, refcount: 1 }
-[94;1mPASS [0m   _hiwire_num_keys() == 1
+[94;1mPASS [0m   hiwire_num_refs() == 1
 hiwire traceref { type: 'decref', ref: 9, index: 4, value: 12, refcount: 1 }
-[94;1mPASS [0m   _hiwire_num_keys() == 0
+[94;1mPASS [0m   hiwire_num_refs() == 0
 [94;1mPASS [0m   is_null(hiwire_get(id1))
 [94;1mPASS [0m   is_null(hiwire_get(id2))
 [94;1mPASS [0m   is_null(hiwire_get(id3))

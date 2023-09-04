@@ -34,8 +34,6 @@
 #define ASSERT(cond) ASSERT_STR(cond, #cond)
 
 int
-_hiwire_num_keys(void);
-int
 _hiwire_slot_info(int);
 
 __externref_t

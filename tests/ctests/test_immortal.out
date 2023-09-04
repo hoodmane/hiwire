@@ -1,5 +1,5 @@
-[94;1mPASS [0m   _hiwire_num_keys() == 0
-[94;1mPASS [0m   _hiwire_num_keys() == 0
+[94;1mPASS [0m   hiwire_num_refs() == 0
+[94;1mPASS [0m   hiwire_num_refs() == 0
 [94;1mPASS [0m   ref_to_int(hiwire_get(id1)) == 5
 [94;1mPASS [0m   ref_to_int(hiwire_get(id2)) == 6
 [94;1mPASS [0m   ref_to_int(hiwire_get(id3)) == 7

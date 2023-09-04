@@ -85,8 +85,8 @@ hiwire_new(__externref_t value)
 }
 
 // for testing purposes.
-uint
-_hiwire_num_keys(void)
+int
+hiwire_num_refs(void)
 {
   return _hiwire.numKeys;
 }

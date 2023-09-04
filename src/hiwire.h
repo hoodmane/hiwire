@@ -63,6 +63,13 @@ HwRef
 hiwire_intern(__externref_t value);
 
 /**
+ * How many alive references are present. Does not count immortal references.
+ */
+int
+hiwire_num_refs(void);
+
+
+/**
  * Look up the externref corresponding to the given HwRef
  */
 __externref_t
