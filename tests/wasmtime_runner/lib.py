@@ -1,4 +1,5 @@
 import sys
+from functools import partial
 from struct import unpack
 
 from wasmtime import (
@@ -21,9 +22,10 @@ def sig_to_functype(sig):
     return FuncType(argtype, restype)
 
 
-def signature(sig):
+def signature(sig, wasi=True):
     def dec(fn):
         fn._wasm_signature = sig_to_functype(sig)
+        fn._wasi = wasi
         return fn
 
     return dec
@@ -42,9 +44,10 @@ def format_types(fmt: str):
 
 
 class WasmLib:
-    def __init__(self, stdout=None):
+    def __init__(self, stdout, is_wasi):
         self.stdout = stdout if stdout else sys.stdout
         self.d = {}
+        self.is_wasi = is_wasi
 
     def set_store(self, store):
         self.store = store
@@ -53,28 +56,29 @@ class WasmLib:
         self.memory = memory
 
     def set_exports(self, exports):
-        self.exports = exports
-        # If we're not in wasi, we won't have exported these so they will all be
-        # None.
-        self.print_str = exports.get("print_str")
-        self.malloc = exports.get("malloc")
-        self.free = exports.get("free")
+        if not self.is_wasi:
+            return
+        self.print_str = partial(exports["print_str"], self.store)
+        self.malloc = partial(exports["malloc"], self.store)
+        self.free = partial(exports["free"], self.store)
 
     def define_lib(self, linker):
         for k in type(self).__dict__:
             v = getattr(self, k)
             if not hasattr(v, "_wasm_signature"):
                 continue
+            if self.is_wasi and not v._wasi:
+                continue
             linker.define_func("env", v.__name__, v._wasm_signature, v)
 
     def print(self, *args, end="\n", sep=" "):
-        if self.print_str:
+        if self.is_wasi:
             # We're in wasi, route the string through wasi's print function so
             # that they interleave correctly with calls to printf.
             outstr = sep.join(args) + end
             ptr = self.str_to_new_utf8(outstr)
-            self.print_str(self.store, ptr)
-            self.free(self.store, ptr)
+            self.print_str(ptr)
+            self.free(ptr)
         else:
             print(*args, end=end, sep=sep, file=self.stdout)
 
@@ -90,9 +94,11 @@ class WasmLib:
 
         Only works in wasi, otherwise we won't have exported malloc.
         """
+        if not self.is_wasi:
+            raise Exception("wasi only!")
         value = s.encode() + b"\x00"
         sz = len(s)
-        ptr = self.malloc(self.store, sz)
+        ptr = self.malloc(sz)
         self.memory.write(self.store, value, ptr)
         return ptr
 
@@ -102,7 +108,7 @@ class WasmLib:
 
     # stdlib functions for wasm32-unknown
 
-    @signature("iii")
+    @signature("iii", wasi=False)
     def printf(self, fmt_ptr, varargs):
         """wasm32-unknown stdlib stub
 

@@ -21,7 +21,7 @@ def tempfilepath():
         path.unlink()
 
 
-def run(path, include_wasi):
+def run(path, is_wasi):
     engine = Engine()
 
     store = Store(engine)
@@ -34,14 +34,14 @@ def run(path, include_wasi):
         open(stdoutpath, "w") as fstdout,
         tempfilepath() as stderrpath,
     ):
-        if include_wasi:
+        if is_wasi:
             wasi = WasiConfig()
             wasi.stdout_file = str(stdoutpath)
             wasi.stderr_file = str(stderrpath)
             store.set_wasi(wasi)
             linker.define_wasi()
 
-        lib = WasmLib(stdout=fstdout)
+        lib = WasmLib(stdout=fstdout, is_wasi=is_wasi)
         lib.define_lib(linker)
 
         m = linker.instantiate(store, module)
