@@ -23,6 +23,31 @@ EM_JS(int, is_null, (__externref_t x), {
 
 #endif
 
+#ifdef __wasi__
+// If we're in wasi, in order to interleave correctly the strings printed by
+// Python with those printed by wasi, we need to route the python strings
+// through wasi print.
+// To do this we need puts, malloc, and free.
+__attribute__((export_name("print_str"))) int
+print_str(char* str)
+{
+  return fputs(str, stdout);
+}
+
+#include "stdlib.h"
+__attribute__((export_name("malloc"))) void*
+malloc_export(int size)
+{
+  return malloc(size);
+}
+
+__attribute__((export_name("free"))) void
+free_export(void* ptr)
+{
+  free(ptr);
+}
+#endif
+
 #if !defined(__wasi__) && !defined(__EMSCRIPTEN__)
 int
 main();

@@ -50,6 +50,7 @@ def run(path, include_wasi):
         memory = exports["memory"]
         lib.set_store(store)
         lib.set_memory(memory)
+        lib.set_exports(exports)
         try:
             result = main(store)
         except (ExitTrap, Trap):

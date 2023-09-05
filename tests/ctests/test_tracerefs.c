@@ -1,13 +1,5 @@
 #include "testlib.h"
 
-#if defined(__wasi__)
-int
-extern_printf(const char*, ...)
-  __attribute__((import_module("env"), import_name("printf")));
-
-#define printf extern_printf
-#endif
-
 int
 main()
 {

@@ -52,6 +52,12 @@ class WasmLib:
     def set_memory(self, memory):
         self.memory = memory
 
+    def set_exports(self, exports):
+        self.exports = exports
+        self.print_str = exports.get("print_str")
+        self.malloc = exports.get("malloc")
+        self.free = exports.get("free")
+
     def define_lib(self, linker):
         for k in type(self).__dict__:
             v = getattr(self, k)
@@ -59,8 +65,16 @@ class WasmLib:
                 continue
             linker.define_func("env", v.__name__, v._wasm_signature, v)
 
-    def print(self, *args, **kwargs):
-        print(*args, **kwargs, file=self.stdout)
+    def print(self, *args, end="\n", sep=" "):
+        if self.print_str:
+            # We're in wasi, route the string through wasi's print function so
+            # that they interleave correctly with calls to printf.
+            outstr = sep.join(args) + end
+            ptr = self.str_to_new_utf8(outstr)
+            self.print_str(self.store, ptr)
+            self.free(self.store, ptr)
+        else:
+            print(*args, end=end, sep=sep, file=self.stdout)
 
     @signature("e")
     def js_value(self):
@@ -74,6 +88,13 @@ class WasmLib:
         mem = self.memory.read(self.store, ptr, ptr + 100)
         idx = mem.find(b"\x00")
         return mem[0:idx].decode()
+
+    def str_to_new_utf8(self, s):
+        value = s.encode() + b"\x00"
+        sz = len(s)
+        ptr = self.malloc(self.store, sz)
+        self.memory.write(self.store, value, ptr)
+        return ptr
 
     def decode_i32(self, ptr):
         mem = self.memory.read(self.store, ptr, ptr + 4)
