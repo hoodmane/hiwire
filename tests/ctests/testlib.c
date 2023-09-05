@@ -69,19 +69,19 @@ puts(const char* x)
 HwRef
 hiwire_deduplicate_get(__externref_t value)
 {
-  return _hiwire_deduplicate_get(value);
+  return extern_hiwire_deduplicate_get(value);
 }
 
 void
 hiwire_deduplicate_set(__externref_t value, HwRef ref)
 {
-  _hiwire_deduplicate_set(value, ref);
+  extern_hiwire_deduplicate_set(value, ref);
 }
 
 void
 hiwire_deduplicate_delete(__externref_t value)
 {
-  _hiwire_deduplicate_delete(value);
+  extern_hiwire_deduplicate_delete(value);
 }
 
 #endif

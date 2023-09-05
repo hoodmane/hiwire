@@ -54,17 +54,17 @@ is_null(__externref_t x)
 #ifdef _HIWIRE_EXTERN_DEDUPLICATE
 
 HwRef
-_hiwire_deduplicate_get(__externref_t value)
-  __attribute__((import_module("env"), import_name("_hiwire_deduplicate_get")));
+extern_hiwire_deduplicate_get(__externref_t value)
+  __attribute__((import_module("env"), import_name("hiwire_deduplicate_get")));
 
 void
-_hiwire_deduplicate_set(__externref_t value, HwRef ref)
-  __attribute__((import_module("env"), import_name("_hiwire_deduplicate_set")));
+extern_hiwire_deduplicate_set(__externref_t value, HwRef ref)
+  __attribute__((import_module("env"), import_name("hiwire_deduplicate_set")));
 
 void
-_hiwire_deduplicate_delete(__externref_t value)
+extern_hiwire_deduplicate_delete(__externref_t value)
   __attribute__((import_module("env"),
-                 import_name("_hiwire_deduplicate_delete")));
+                 import_name("hiwire_deduplicate_delete")));
 
 #endif
 

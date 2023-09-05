@@ -129,15 +129,15 @@ class WasmLib:
         return len(result)
 
     @signature("ie")
-    def _hiwire_deduplicate_get(self, k):
+    def hiwire_deduplicate_get(self, k):
         return self.d.get(id(k), 0)
 
     @signature("vei")
-    def _hiwire_deduplicate_set(self, k, v):
+    def hiwire_deduplicate_set(self, k, v):
         self.d[id(k)] = v
 
     @signature("ve")
-    def _hiwire_deduplicate_delete(self, k):
+    def hiwire_deduplicate_delete(self, k):
         del self.d[id(k)]
 
     @signature("ei")
