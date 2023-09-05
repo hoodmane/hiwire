@@ -54,6 +54,8 @@ class WasmLib:
 
     def set_exports(self, exports):
         self.exports = exports
+        # If we're not in wasi, we won't have exported these so they will all be
+        # None.
         self.print_str = exports.get("print_str")
         self.malloc = exports.get("malloc")
         self.free = exports.get("free")
@@ -76,20 +78,18 @@ class WasmLib:
         else:
             print(*args, end=end, sep=sep, file=self.stdout)
 
-    @signature("e")
-    def js_value(self):
-        return {"a": 7}
-
-    @signature("ve")
-    def print_value(self, o):
-        self.print(o)
-
     def decode_str(self, ptr):
+        # Hopefully none of our strings are longer than 100 bytes...
         mem = self.memory.read(self.store, ptr, ptr + 100)
         idx = mem.find(b"\x00")
         return mem[0:idx].decode()
 
     def str_to_new_utf8(self, s):
+        """Encode s to bytes, add a null byte to end, malloc a new ptr of the
+        appropriate size and assign the bytes to it.
+
+        Only works in wasi, otherwise we won't have exported malloc.
+        """
         value = s.encode() + b"\x00"
         sz = len(s)
         ptr = self.malloc(self.store, sz)
@@ -100,33 +100,45 @@ class WasmLib:
         mem = self.memory.read(self.store, ptr, ptr + 4)
         return unpack("I", mem)[0]
 
-    @signature("viiiei")
-    def hiwire_traceref(self, type_ptr, ref, index, value, refcount):
-        type = self.decode_str(type_ptr)
-        self.print(
-            "hiwire traceref",
-            f"{{ type: {type!r}, ref: {ref}, index: {index}, value: {value[0]}, refcount: {refcount} }}",
-        )
-        self.stdout.flush()
+    # stdlib functions for wasm32-unknown
 
     @signature("iii")
-    def printf(self, x, y):
-        fmt = self.decode_str(x)
+    def printf(self, fmt_ptr, varargs):
+        """wasm32-unknown stdlib stub
+
+        According to the clang wasm ABI, varargs is a void** pointing to the
+        beginning of the varargs in the memory stack.
+
+        Currently only handles %s and %d.
+        """
+        fmt = self.decode_str(fmt_ptr)
         repls = []
-        y -= 4
+        varargs -= 4
         for fchar in format_types(fmt):
-            y += 4
+            varargs += 4
             if fchar == "s":
-                repls.append(self.decode_str(self.decode_i32(y)))
+                repls.append(self.decode_str(self.decode_i32(varargs)))
                 continue
             if fchar == "d":
-                repls.append(self.decode_i32(y))
+                repls.append(self.decode_i32(varargs))
                 continue
-            print("Unknown fchar", fchar)
-            raise Exception("oops!")
+            print(f"Unknown fchar {fchar}")
+            raise Exception(f"Unknown fchar {fchar}")
         result = fmt % tuple(repls)
         self.print(result, end="")
         return len(result)
+
+    # Hiwire functionality: traceref and deduplication
+
+    @signature("viiiei")
+    def hiwire_traceref(self, type_ptr, ref, index, value_externref, refcount):
+        value_int = self.ref_to_int(value_externref)
+        type = self.decode_str(type_ptr)
+        self.print(
+            "hiwire traceref",
+            f"{{ type: {type!r}, ref: {ref}, index: {index}, value: {value_int}, refcount: {refcount} }}",
+        )
+        self.stdout.flush()
 
     @signature("ie")
     def hiwire_deduplicate_get(self, k):
@@ -140,12 +152,25 @@ class WasmLib:
     def hiwire_deduplicate_delete(self, k):
         del self.d[id(k)]
 
+    # testlib functions
+
+    @signature("e")
+    def js_value(self):
+        return {"a": 7}
+
+    @signature("ve")
+    def print_value(self, o):
+        self.print(o)
+
     @signature("ei")
     def int_to_ref(self, x):
-        return [x]
+        # wasmtime won't let us treat an int as an externref so put it in a
+        # tuple.
+        return (x,)
 
     @signature("ie")
     def ref_to_int(self, x):
+        # x could also be None if it's a null reference
         return x[0] if x else -1
 
     @signature("ie")
