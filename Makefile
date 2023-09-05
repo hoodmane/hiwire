@@ -22,6 +22,8 @@ build/_hiwire_config.h:
 		EXTERN_REALLOC \
 		EMSCRIPTEN_TRACEREFS \
 		EXTERN_TRACEREFS \
+		ABORT_FAIL \
+		EXTERN_FAIL \
 	; do \
 		echo $${!A+#define _HIWIRE_$$A $${!A}} >> $@ ; \
 	done

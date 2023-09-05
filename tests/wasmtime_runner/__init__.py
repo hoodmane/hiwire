@@ -3,7 +3,7 @@ from collections import namedtuple
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from wasmtime import Engine, ExitTrap, Linker, Module, Store, WasiConfig
+from wasmtime import Engine, ExitTrap, Linker, Module, Store, Trap, WasiConfig
 
 from .lib import WasmLib
 
@@ -33,7 +33,6 @@ def run(path, include_wasi):
         tempfilepath() as stdoutpath,
         open(stdoutpath, "w") as fstdout,
         tempfilepath() as stderrpath,
-        open(stderrpath, "w"),
     ):
         if include_wasi:
             wasi = WasiConfig()
@@ -53,7 +52,7 @@ def run(path, include_wasi):
         lib.set_memory(memory)
         try:
             result = main(store)
-        except ExitTrap:
+        except (ExitTrap, Trap):
             result = 1
         if result is None:
             result = 0

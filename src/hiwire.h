@@ -105,6 +105,10 @@ hiwire_incref_deduplicate(HwRef ref)
 #endif
   ;
 
+#define HIWIRE_FAIL_GET 1
+#define HIWIRE_FAIL_INCREF 2
+#define HIWIRE_FAIL_DECREF 3
+
 #ifdef __cplusplus
 }
 #endif

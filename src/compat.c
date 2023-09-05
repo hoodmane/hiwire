@@ -16,6 +16,50 @@
 #if defined(_HIWIRE_EMSCRIPTEN_TRACEREFS) && defined(_HIWIRE_EXTERN_TRACEREFS)
 #error "only define one of EMSCRIPTEN_TRACEREFS or EXTERN_TRACEREFS"
 #endif
+// #if defined(_HIWIRE_EXTERN_FAIL) && defined(_HIWIRE_ABORT)
+// #error "only define one of EMSCRIPTEN_TRACEREFS or EXTERN_TRACEREFS"
+// #endif
+
+#if defined(_HIWIRE_EXTERN_FAIL)
+void
+hiwire_invalid_id(int, HwRef);
+
+#elif defined(_HIWIRE_ABORT_FAIL)
+
+#if !__has_include("stdlib.h")
+#error "Cannot use ABORT_FAIL with wasm32-unknown, use EXTERN_FAIL instead"
+#endif
+#include "stdio.h"
+#include "stdlib.h"
+
+static void
+hiwire_invalid_id(int type, HwRef ref)
+{
+  char* typestr = NULL;
+  char* reason = NULL;
+  switch (type) {
+    case HIWIRE_FAIL_GET:
+      typestr = "hiwire_get";
+      break;
+    case HIWIRE_FAIL_INCREF:
+      typestr = "hiwire_incref";
+      break;
+    case HIWIRE_FAIL_DECREF:
+      typestr = "hiwire_decref";
+      break;
+  }
+  if (ref == NULL) {
+    reason = "null";
+  } else {
+    reason = "freed";
+  }
+  fprintf(stderr, "%s failed: reference %d is %s\n", typestr, (int)ref, reason);
+  abort();
+}
+
+#else
+#define hiwire_invalid_id(type, ref)
+#endif
 
 _Static_assert(alignof(HwRef) == alignof(uint),
                "HwRef should have the same alignment as int.");

@@ -125,6 +125,32 @@ def test_tracerefs(platform):
     run_test_assert_match(platform, "tracerefs")
 
 
+@pytest.mark.parametrize("platform", HOSTED_PLATFORMS)
+def test_abortfail(platform):
+    make(platform, opts=["STATIC_PAGES=1", "ABORT_FAIL"])
+    for test in ["get", "getnull", "incref", "decref"]:
+        build_test(platform, f"abortfail_{test}")
+    result = run_test(platform, "abortfail_get")
+    assert result.returncode != 0
+    assert result.stderr.startswith("hiwire_get failed: reference 3 is freed")
+    result = run_test(platform, "abortfail_getnull")
+    assert result.returncode != 0
+    assert result.stderr.startswith("hiwire_get failed: reference 0 is null")
+    result = run_test(platform, "abortfail_incref")
+    assert result.returncode != 0
+    assert result.stderr.startswith("hiwire_incref failed: reference 3 is freed")
+    result = run_test(platform, "abortfail_decref")
+    assert result.returncode != 0
+    assert result.stderr.startswith("hiwire_decref failed: reference 3 is freed")
+
+
+@pytest.mark.parametrize("platform", PLATFORMS)
+def test_externfail(platform):
+    make(platform, opts=["STATIC_PAGES=1", "EXTERN_FAIL"])
+    build_test(platform, "externfail")
+    run_test_assert_match(platform, "externfail")
+
+
 @pytest.mark.parametrize("test_name", ALL_TESTS)
 def test_emcc_dylink(test_name):
     make("emcc", opts=["EMSCRIPTEN_DEDUPLICATE"])
