@@ -2,7 +2,6 @@ import subprocess
 
 import pytest
 import wasmtime_runner
-from wasmtime import ExitTrap
 
 from build import ROOT_DIR, TEST_DIR, build_test, compile, make, run_process
 
@@ -13,73 +12,79 @@ HOSTED_PLATFORMS = ["emcc", "wasi"]
 
 
 def emcc_run(test):
-    res = subprocess.run(["node", test], capture_output=True, encoding="utf8")
-    if res.returncode:
-        print(res.stdout)
-        print(res.stderr)
-        raise ExitTrap(f"Exited with i32 exit status {res.returncode}")
-    return res.stdout
+    return subprocess.run(["node", test], capture_output=True, encoding="utf8")
 
 
 def run_test(platform, test_name):
     extension = "js" if platform == "emcc" else "wasm"
     test = TEST_BUILD_DIR / f"test_{test_name}.{extension}"
-    expected = (TEST_DIR / "ctests" / f"test_{test_name}.out").read_text()
     if platform == "emcc":
-        res = emcc_run(test)
+        return emcc_run(test)
     else:
-        res = wasmtime_runner.run(test, platform == "wasi")
-    assert res == expected
+        return wasmtime_runner.run(test, platform == "wasi")
+
+
+def run_test_assert_match(platform, test_name):
+    res = run_test(platform, test_name)
+    expected = (TEST_DIR / "ctests" / f"test_{test_name}.out").read_text()
+    print("stdout:")
+    print("=" * 7)
+    print(res.stdout)
+    print("stderr:")
+    print("=" * 7)
+    print(res.stderr)
+    assert res.returncode == 0
+    assert res.stdout == expected
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)
 def test_basic_static(platform):
     make(platform, opts=["STATIC_PAGES=1"])
     build_test(platform, "basic")
-    run_test(platform, "basic")
+    run_test_assert_match(platform, "basic")
 
 
 @pytest.mark.parametrize("platform", HOSTED_PLATFORMS)
 def test_basic_realloc(platform):
     make(platform)
     build_test(platform, "basic")
-    run_test(platform, "basic")
+    run_test_assert_match(platform, "basic")
 
 
 @pytest.mark.parametrize("platform", HOSTED_PLATFORMS)
 def test_many_refs_realloc(platform):
     make(platform, opts=[])
     build_test(platform, "many_refs")
-    run_test(platform, "many_refs")
+    run_test_assert_match(platform, "many_refs")
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)
 def test_many_refs_static_enough_space(platform):
     make(platform, opts=["STATIC_PAGES=5"])
     build_test(platform, "many_refs")
-    run_test(platform, "many_refs")
+    run_test_assert_match(platform, "many_refs")
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)
 def test_many_refs_static_too_little_space(platform):
     make(platform, opts=["STATIC_PAGES=4"])
     build_test(platform, "many_refs")
-    with pytest.raises(ExitTrap, match="Exited with i32 exit status 1"):
-        run_test(platform, "many_refs")
+    result = run_test(platform, "many_refs")
+    assert result.returncode == 1
 
 
 @pytest.mark.parametrize("platform", HOSTED_PLATFORMS)
 def test_versions_realloc(platform):
     make(platform, opts=[])
     build_test(platform, "versions")
-    run_test(platform, "versions")
+    run_test_assert_match(platform, "versions")
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)
 def test_versions_static(platform):
     make(platform, opts=["STATIC_PAGES=1"])
     build_test(platform, "versions")
-    run_test(platform, "versions")
+    run_test_assert_match(platform, "versions")
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)
@@ -87,14 +92,14 @@ def test_deduplication(platform):
     dedup = "EMSCRIPTEN_DEDUPLICATE" if platform == "emcc" else "EXTERN_DEDUPLICATE"
     make(platform, opts=["STATIC_PAGES=1", dedup])
     build_test(platform, "deduplication")
-    run_test(platform, "deduplication")
+    run_test_assert_match(platform, "deduplication")
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)
 def test_immortal(platform):
     make(platform, opts=["STATIC_PAGES=1"])
     build_test(platform, "immortal")
-    run_test(platform, "immortal")
+    run_test_assert_match(platform, "immortal")
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)
@@ -102,14 +107,14 @@ def test_immortal_deduplication(platform):
     dedup = "EMSCRIPTEN_DEDUPLICATE" if platform == "emcc" else "EXTERN_DEDUPLICATE"
     make(platform, opts=["STATIC_PAGES=1", dedup])
     build_test(platform, "immortal_deduplication")
-    run_test(platform, "immortal_deduplication")
+    run_test_assert_match(platform, "immortal_deduplication")
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)
 def test_extern_realloc(platform):
     make(platform, opts=["EXTERN_REALLOC"])
     build_test(platform, "extern_realloc")
-    run_test(platform, "extern_realloc")
+    run_test_assert_match(platform, "extern_realloc")
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)
@@ -117,7 +122,7 @@ def test_tracerefs(platform):
     traceref = "EMSCRIPTEN_TRACEREFS" if platform == "emcc" else "EXTERN_TRACEREFS"
     make(platform, opts=["STATIC_PAGES=1", traceref])
     build_test(platform, "tracerefs")
-    run_test(platform, "tracerefs")
+    run_test_assert_match(platform, "tracerefs")
 
 
 @pytest.mark.parametrize("test_name", ALL_TESTS)
@@ -158,4 +163,4 @@ def test_emcc_dylink(test_name):
         ["emcc", "-o", f"test_{test_name}.js", f"test_{test_name}.o"] + ldflags,
         cwd=TEST_BUILD_DIR,
     )
-    run_test("emcc", test_name)
+    run_test_assert_match("emcc", test_name)

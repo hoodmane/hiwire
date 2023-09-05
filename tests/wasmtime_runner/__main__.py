@@ -9,8 +9,8 @@ def main():
     name = sys.argv[-1]
 
     result = run(TEST_DIR / "build" / f"test_{name}.wasm", True)
-    (TEST_DIR / "ctests" / f"test_{name}.out").write_text(result)
-    print(result)
+    (TEST_DIR / "ctests" / f"test_{name}.out").write_text(result.stdout)
+    print(result.stdout)
 
 
 if __name__ == "__main__":

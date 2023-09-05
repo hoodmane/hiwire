@@ -68,7 +68,6 @@ hiwire_intern(__externref_t value);
 int
 hiwire_num_refs(void);
 
-
 /**
  * Look up the externref corresponding to the given HwRef
  */

@@ -1,10 +1,13 @@
 import contextlib
+from collections import namedtuple
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from wasmtime import Engine, ExitTrap, Linker, Module, Store, WasiConfig
 
 from .lib import WasmLib
+
+Result = namedtuple("Result", "stdout stderr returncode")
 
 
 @contextlib.contextmanager
@@ -26,14 +29,20 @@ def run(path, include_wasi):
 
     linker = Linker(engine)
 
-    with tempfilepath() as path, open(path, "w") as f:
+    with (
+        tempfilepath() as stdoutpath,
+        open(stdoutpath, "w") as fstdout,
+        tempfilepath() as stderrpath,
+        open(stderrpath, "w"),
+    ):
         if include_wasi:
             wasi = WasiConfig()
-            wasi.stdout_file = str(path)
+            wasi.stdout_file = str(stdoutpath)
+            wasi.stderr_file = str(stderrpath)
             store.set_wasi(wasi)
             linker.define_wasi()
 
-        lib = WasmLib(stdout=f)
+        lib = WasmLib(stdout=fstdout)
         lib.define_lib(linker)
 
         m = linker.instantiate(store, module)
@@ -44,11 +53,9 @@ def run(path, include_wasi):
         lib.set_memory(memory)
         try:
             result = main(store)
-            if result:
-                raise ExitTrap(f"Exited with i32 exit status {result}")
-        except Exception:
-            f.flush()
-            print(path.read_text())
-            raise
-        f.flush()
-        return path.read_text()
+        except ExitTrap:
+            result = 1
+        if result is None:
+            result = 0
+        fstdout.flush()
+        return Result(stdoutpath.read_text(), stderrpath.read_text(), result)
