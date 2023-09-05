@@ -1,4 +1,12 @@
-#ifdef HIWIRE_EXTERN_DEDUPLICATE
+#if defined(_HIWIRE_EMSCRIPTEN_DEDUPLICATE) && !defined(__EMSCRIPTEN__)
+#error "EMSCRIPTEN_DEDUPLICATE only works with Emscripten"
+#endif
+#if defined(_HIWIRE_EMSCRIPTEN_DEDUPLICATE) &&                                 \
+  defined(_HIWIRE_EXTERN_DEDUPLICATE)
+#error "only define one of EMSCRIPTEN_DEDUPLICATE or EXTERN_DEDUPLICATE"
+#endif
+
+#ifdef _HIWIRE_EXTERN_DEDUPLICATE
 #define _hiwire_deduplicate_get hiwire_deduplicate_get
 #define _hiwire_deduplicate_set hiwire_deduplicate_set
 #define _hiwire_deduplicate_delete hiwire_deduplicate_delete

@@ -8,16 +8,6 @@ typedef unsigned int uint;
     HEAP_REF_TO_INDEX(ref),                                                    \
     _hiwire_get(HEAP_REF_TO_INDEX(ref)),                                       \
     (_hiwire.slotInfo[HEAP_REF_TO_INDEX(ref)] & REFCOUNT_MASK) >> 2)
-
-#if defined(_HIWIRE_EXTERN_TRACEREFS)
-#define _hiwire_traceref hiwire_traceref
-#endif
-void
-_hiwire_traceref(char* type,
-                 HwRef ref,
-                 uint index,
-                 __externref_t value,
-                 uint refcount);
 #else
 #define TRACEREFS(...)
 #endif
