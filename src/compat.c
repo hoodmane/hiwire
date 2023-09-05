@@ -61,6 +61,7 @@ _hiwire_realloc(void* orig, size_t sz);
 #if defined(_HIWIRE_EXTERN_TRACEREFS)
 #define _hiwire_traceref hiwire_traceref
 #endif
+
 void
 _hiwire_traceref(char* type,
                  HwRef ref,

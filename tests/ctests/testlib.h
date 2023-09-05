@@ -6,6 +6,7 @@
 #include "hiwire_macros.h"
 #undef HIWIRE_INTERNAL
 
+// Extra test macros
 #define INFO_IS_OCCUPIED(info) ((info)&OCCUPIED_BIT)
 #define INFO_REFCOUNT(info) (((info)&REFCOUNT_MASK) >> 2)
 
@@ -33,23 +34,24 @@
 
 #define ASSERT(cond) ASSERT_STR(cond, #cond)
 
+// Extra exposed test functions
 int
 _hiwire_slot_info(int);
 
-__externref_t
-int_to_ref(int x)
-  __attribute__((import_module("env"), import_name("int_to_ref")));
+// stdlib functions
 
-__externref_t
-get_obj(int x) __attribute__((import_module("env"), import_name("get_obj")));
-
+#if __has_include("stdio.h")
+#include "stdio.h"
+#else
 int
-ref_to_int(__externref_t x)
-  __attribute__((import_module("env"), import_name("ref_to_int")));
+printf(const char*, ...)
+  __attribute__((import_module("env"), import_name("printf")));
+#define NULL (void*)(0)
+#endif
 
-int
-is_null(__externref_t x)
-  __attribute__((import_module("env"), import_name("is_null")));
+typedef unsigned long size_t;
+
+// Hiwire functionality: traceref and deduplication
 
 #ifdef _HIWIRE_EXTERN_DEDUPLICATE
 
@@ -78,13 +80,19 @@ extern_hiwire_traceref(char* type,
   __attribute__((import_module("env"), import_name("hiwire_traceref")));
 #endif
 
-#if __has_include("stdio.h")
-#include "stdio.h"
-#else
-int
-printf(const char*, ...)
-  __attribute__((import_module("env"), import_name("printf")));
-#define NULL (void*)(0)
-#endif
+// testlib functions
 
-typedef unsigned long size_t;
+__externref_t
+int_to_ref(int x)
+  __attribute__((import_module("env"), import_name("int_to_ref")));
+
+__externref_t
+get_obj(int x) __attribute__((import_module("env"), import_name("get_obj")));
+
+int
+ref_to_int(__externref_t x)
+  __attribute__((import_module("env"), import_name("ref_to_int")));
+
+int
+is_null(__externref_t x)
+  __attribute__((import_module("env"), import_name("is_null")));

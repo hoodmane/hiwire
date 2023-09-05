@@ -1,26 +1,20 @@
 #include "testlib.h"
 
-#ifdef __EMSCRIPTEN__
-#include "emscripten.h"
+// Unhosted stubs
+#if !defined(__wasi__) && !defined(__EMSCRIPTEN__)
+int
+main();
+int
+_start()
+{
+  return main();
+}
 
-// clang-format off
-EM_JS(__externref_t, int_to_ref, (int x), {
-    return x;
-})
-
-EM_JS(__externref_t, get_obj, (int x), {
-    return {x};
-})
-
-EM_JS(int, ref_to_int, (__externref_t x), {
-    return x;
-})
-
-EM_JS(int, is_null, (__externref_t x), {
-    return x == null;
-})
-// clang-format on
-
+int
+puts(const char* x)
+{
+  return printf("%s\n", x);
+}
 #endif
 
 #ifdef __wasi__
@@ -48,21 +42,7 @@ free_export(void* ptr)
 }
 #endif
 
-#if !defined(__wasi__) && !defined(__EMSCRIPTEN__)
-int
-main();
-int
-_start()
-{
-  return main();
-}
-
-int
-puts(const char* x)
-{
-  return printf("%s\n", x);
-}
-#endif
+// Hiwire functionality: traceref and deduplication
 
 #ifdef _HIWIRE_EXTERN_DEDUPLICATE
 
@@ -97,4 +77,28 @@ hiwire_traceref(char* type,
 {
   extern_hiwire_traceref(type, ref, index, value, refcount);
 }
+#endif
+
+// Emscripten definitions for testlib functions
+#ifdef __EMSCRIPTEN__
+#include "emscripten.h"
+
+// clang-format off
+EM_JS(__externref_t, int_to_ref, (int x), {
+    return x;
+})
+
+EM_JS(__externref_t, get_obj, (int x), {
+    return {x};
+})
+
+EM_JS(int, ref_to_int, (__externref_t x), {
+    return x;
+})
+
+EM_JS(int, is_null, (__externref_t x), {
+    return x == null;
+})
+// clang-format on
+
 #endif

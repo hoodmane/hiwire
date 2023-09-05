@@ -36,11 +36,10 @@ hiwire_intern(__externref_t value)
   }
   uint index = _hiwire_immortal_add(value);
   if (index == -1) {
-    // TODO: operation failed..
+    // TODO: fatal?
     return NULL;
   }
-  HwRef result = IMMORTAL_INDEX_TO_REF(index);
-  return result;
+  return IMMORTAL_INDEX_TO_REF(index);
 }
 
 HwRef
@@ -55,6 +54,7 @@ hiwire_new(__externref_t value)
   uint orig_size = sizeof(uint[_hiwire.slotInfoSize]);
   if (needed_size > orig_size) {
     if (index > MAX_INDEX) {
+      // TODO: fatal?
       return NULL;
     }
     uint new_size = sizeof(uint[_hiwire.slotInfoSize + ALLOC_INCREMENT]);
