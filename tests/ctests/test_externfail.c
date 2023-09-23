@@ -1,7 +1,7 @@
 #include "testlib.h"
 
 void
-hiwire_invalid_id(int type, HwRef ref)
+hiwire_invalid_ref(int type, HwRef ref)
 {
   printf("type: %d, ref: %d\n", type, ref);
 }
