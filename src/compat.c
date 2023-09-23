@@ -92,7 +92,7 @@ EM_JS_DEPS(_hiwire_traceref, "$UTF8ToString");
 
 #if defined(_HIWIRE_EXTERN_FAIL)
 void
-hiwire_invalid_id(int, HwRef);
+hiwire_invalid_ref(int, HwRef);
 
 #elif defined(_HIWIRE_ABORT_FAIL)
 
@@ -103,7 +103,7 @@ hiwire_invalid_id(int, HwRef);
 #include "stdlib.h"
 
 static void
-hiwire_invalid_id(int type, HwRef ref)
+hiwire_invalid_ref(int type, HwRef ref)
 {
   char* typestr = NULL;
   char* reason = NULL;
@@ -128,5 +128,5 @@ hiwire_invalid_id(int type, HwRef ref)
 }
 
 #else
-#define hiwire_invalid_id(type, ref)
+#define hiwire_invalid_ref(type, ref)
 #endif

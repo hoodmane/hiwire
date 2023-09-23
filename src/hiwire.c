@@ -100,7 +100,7 @@ __externref_t
 hiwire_get(HwRef ref)
 {
   if (!ref) {
-    hiwire_invalid_id(HIWIRE_FAIL_GET, ref);
+    hiwire_invalid_ref(HIWIRE_FAIL_GET, ref);
     return __builtin_wasm_ref_null_extern();
   }
   if (IS_IMMORTAL(ref)) {
@@ -109,7 +109,7 @@ hiwire_get(HwRef ref)
   uint index = HEAP_REF_TO_INDEX(ref);
   uint info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
-    hiwire_invalid_id(HIWIRE_FAIL_GET, ref);
+    hiwire_invalid_ref(HIWIRE_FAIL_GET, ref);
     return __builtin_wasm_ref_null_extern();
   }
   return _hiwire_get(index);
@@ -126,7 +126,7 @@ hiwire_incref(HwRef ref)
   uint index = HEAP_REF_TO_INDEX(ref);
   uint info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
-    hiwire_invalid_id(HIWIRE_FAIL_INCREF, ref);
+    hiwire_invalid_ref(HIWIRE_FAIL_INCREF, ref);
     return;
   }
   HEAP_INCREF(_hiwire.slotInfo[index]);
@@ -143,7 +143,7 @@ hiwire_decref(HwRef ref)
   uint index = HEAP_REF_TO_INDEX(ref);
   uint info = _hiwire.slotInfo[index];
   if (HEAP_REF_IS_OUT_OF_DATE(ref, info)) {
-    hiwire_invalid_id(HIWIRE_FAIL_DECREF, ref);
+    hiwire_invalid_ref(HIWIRE_FAIL_DECREF, ref);
     return;
   }
   HEAP_DECREF(info);
