@@ -7,8 +7,8 @@
 #undef HIWIRE_INTERNAL
 
 // Extra test macros
-#define INFO_IS_OCCUPIED(info) ((info)&OCCUPIED_BIT)
-#define INFO_REFCOUNT(info) (((info)&REFCOUNT_MASK) >> 2)
+#define INFO_IS_OCCUPIED(info) ((info) & OCCUPIED_BIT)
+#define INFO_REFCOUNT(info) (((info) & REFCOUNT_MASK) >> 2)
 
 #define REF_VERSION(ref) (((unsigned int)(ref)) >> VERSION_SHIFT)
 

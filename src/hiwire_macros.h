@@ -92,8 +92,8 @@ _Static_assert(VERSION_MASK == 0xFc000000, "oops!");
 #define HEAP_REF_IS_OUT_OF_DATE(ref, info)                                     \
   ((((uint)(ref)) ^ (info)) & VERSION_OCCUPIED_MASK)
 
-#define HEAP_IS_REFCNT_ZERO(info) (!((info)&REFCOUNT_MASK))
-#define HEAP_IS_DEDUPLICATED(info) ((info)&DEDUPLICATED_BIT)
+#define HEAP_IS_REFCNT_ZERO(info) (!((info) & REFCOUNT_MASK))
+#define HEAP_IS_DEDUPLICATED(info) ((info) & DEDUPLICATED_BIT)
 
 #define HEAP_INCREF(info) info += REFCOUNT_INTERVAL
 #define HEAP_DECREF(info) info -= REFCOUNT_INTERVAL
@@ -102,7 +102,7 @@ _Static_assert(VERSION_MASK == 0xFc000000, "oops!");
 #define _NEXT_VERSION(info) (info + (1 << VERSION_SHIFT))
 // assemble version, field, and occupied
 #define _NEW_INFO(version, field_and_flag)                                     \
-  (((version)&VERSION_MASK) | (field_and_flag))
+  (((version) & VERSION_MASK) | (field_and_flag))
 
 // make a new reference with the same version as info and the given index.
 #define HEAP_NEW_REF(index, info) ((HwRef)_NEW_INFO(info, ((index) << 1) | 1))
