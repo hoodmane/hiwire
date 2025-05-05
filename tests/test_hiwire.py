@@ -26,7 +26,7 @@ def run_test(platform, test_name):
 
 def run_test_assert_match(platform, test_name):
     res = run_test(platform, test_name)
-    out = (TEST_DIR / "ctests" / f"test_{test_name}.out")
+    out = TEST_DIR / "ctests" / f"test_{test_name}.out"
     expected = out.read_text()
     print("stdout:")
     print("=" * 7)
