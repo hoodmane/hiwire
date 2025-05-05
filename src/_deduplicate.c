@@ -72,21 +72,19 @@ void
 _hiwire_deduplicate_delete(__externref_t value);
 
 HwRef
-hiwire_incref_deduplicate(HwRef ref)
+hiwire_new_deduplicate(__externref_t value)
 {
-  __externref_t value = hiwire_get(ref);
   HwRef result = _hiwire_deduplicate_get(value);
-  if (!result) {
-    // not present, use ref
-    result = ref;
+  if (result) {
+    hiwire_incref(result);
+  } else {
+    // not present, use new value
+    result = hiwire_new(value);
     _hiwire_deduplicate_set(value, result);
-    if (!IS_IMMORTAL(ref)) {
-      // Record that we need to remove this entry from obj_to_key when the
-      // reference is freed. (Touching a map is expensive, avoid if possible!)
-      _hiwire.slotInfo[HEAP_REF_TO_INDEX(result)] |= DEDUPLICATED_BIT;
-    }
+    // Record that we need to remove this entry from obj_to_key when the
+    // reference is freed. (Touching a map is expensive, avoid if possible!)
+    _hiwire.slotInfo[HEAP_REF_TO_INDEX(result)] |= DEDUPLICATED_BIT;
   }
-  hiwire_incref(result);
   return result;
 }
 
