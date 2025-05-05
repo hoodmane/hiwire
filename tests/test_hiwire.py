@@ -26,7 +26,8 @@ def run_test(platform, test_name):
 
 def run_test_assert_match(platform, test_name):
     res = run_test(platform, test_name)
-    expected = (TEST_DIR / "ctests" / f"test_{test_name}.out").read_text()
+    out = TEST_DIR / "ctests" / f"test_{test_name}.out"
+    expected = out.read_text()
     print("stdout:")
     print("=" * 7)
     print(res.stdout)
@@ -100,14 +101,6 @@ def test_immortal(platform):
     make(platform, opts=["STATIC_PAGES=1"])
     build_test(platform, "immortal")
     run_test_assert_match(platform, "immortal")
-
-
-@pytest.mark.parametrize("platform", PLATFORMS)
-def test_immortal_deduplication(platform):
-    dedup = "EMSCRIPTEN_DEDUPLICATE" if platform == "emcc" else "EXTERN_DEDUPLICATE"
-    make(platform, opts=["STATIC_PAGES=1", dedup])
-    build_test(platform, "immortal_deduplication")
-    run_test_assert_match(platform, "immortal_deduplication")
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)

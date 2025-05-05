@@ -1,23 +1,28 @@
 [94;1mPASS [0m   !SLOT_DEDUPLICATED(id11)
-[94;1mPASS [0m   SLOT_DEDUPLICATED(id11)
-[94;1mPASS [0m   id11 == id12
+[94;1mPASS [0m   SLOT_DEDUPLICATED(id12)
+[94;1mPASS [0m   id11 != id12
 [94;1mPASS [0m   id12 == id14
 [94;1mPASS [0m   HEAP_REF_TO_INDEX(id11) == 1
-[94;1mPASS [0m   HEAP_REF_TO_INDEX(id13) == 2
-[94;1mPASS [0m   SLOT_REFCOUNT(id11) == 3
+[94;1mPASS [0m   HEAP_REF_TO_INDEX(id12) == 2
+[94;1mPASS [0m   HEAP_REF_TO_INDEX(id13) == 3
+[94;1mPASS [0m   HEAP_REF_TO_INDEX(id14) == 2
+[94;1mPASS [0m   SLOT_REFCOUNT(id11) == 1
+[94;1mPASS [0m   SLOT_REFCOUNT(id12) == 2
 [94;1mPASS [0m   SLOT_REFCOUNT(id13) == 1
-[94;1mPASS [0m   SLOT_DEDUPLICATED(id11)
+[94;1mPASS [0m   !SLOT_DEDUPLICATED(id11)
+[94;1mPASS [0m   SLOT_DEDUPLICATED(id12)
 [94;1mPASS [0m   !SLOT_DEDUPLICATED(id13)
-[94;1mPASS [0m   id21 == id22
+[94;1mPASS [0m   id21 != id22
 [94;1mPASS [0m   id22 == id24
 [94;1mPASS [0m   id22 != id12
-[94;1mPASS [0m   !is_null(hiwire_get(id21))
-[94;1mPASS [0m   !is_null(hiwire_get(id21))
 [94;1mPASS [0m   is_null(hiwire_get(id21))
+[94;1mPASS [0m   !is_null(hiwire_get(id22))
+[94;1mPASS [0m   is_null(hiwire_get(id22))
 [94;1mPASS [0m   !is_null(hiwire_get(id23))
 [94;1mPASS [0m   !SLOT_DEDUPLICATED(id31)
-[94;1mPASS [0m   SLOT_DEDUPLICATED(id31)
+[94;1mPASS [0m   SLOT_DEDUPLICATED(id32)
+[94;1mPASS [0m   id31 != id22
 [94;1mPASS [0m   is_null(hiwire_get(id21))
-[94;1mPASS [0m   id31 == id32
+[94;1mPASS [0m   id31 != id32
 [94;1mPASS [0m   id32 == id34
 [94;1mPASS [0m   id21 != id31

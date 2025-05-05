@@ -14,7 +14,7 @@
 extern “C”
 {
 #endif
-#if true && false
+#if 1 && 0
   // Prevent clang-format from indenting extern "C" body.
   // It's smart enough to understand #if false and ignore it, but not true &&
   // false!
@@ -97,7 +97,7 @@ hiwire_pop(HwRef ref);
  * values with C equality checks.
  */
 HwRef
-hiwire_incref_deduplicate(HwRef ref)
+hiwire_new_deduplicate(__externref_t value)
 #ifndef _HIWIRE_CAN_DEDUPLICATE
   __attribute__((
     unavailable("To use hiwire_incref_deduplicate you must build with "
