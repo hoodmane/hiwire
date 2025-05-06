@@ -36,7 +36,7 @@ EM_JS(void, __hiwire_deduplicate_delete, (__externref_t map, __externref_t value
 // clang-format on
 
 static void
-deduplicate_init()
+__attribute__((constructor)) deduplicate_init()
 {
   _deduplicate_map = hiwire_intern(__hiwire_deduplicate_new());
 }
@@ -58,9 +58,6 @@ _hiwire_deduplicate_delete(__externref_t value)
 {
   return __hiwire_deduplicate_delete(hiwire_get(_deduplicate_map), value);
 }
-
-#else
-#define deduplicate_init()
 #endif
 
 #ifdef _HIWIRE_CAN_DEDUPLICATE
