@@ -5,23 +5,25 @@ main()
 {
   __externref_t o1 = get_obj(7);
   __externref_t o2 = get_obj(9);
-  HwRef id11 = hiwire_new(o1);
-  ASSERT(!SLOT_DEDUPLICATED(id11));
-  HwRef id12 = hiwire_new_deduplicate(o1);
-  ASSERT(SLOT_DEDUPLICATED(id12));
+  HwRef id11 = hiwire_new_deduplicate(o1);
+  ASSERT(SLOT_DEDUPLICATED(id11));
+  HwRef id12 = hiwire_new(o1);
+  ASSERT(!SLOT_DEDUPLICATED(id12));
   HwRef id13 = hiwire_new(o1);
   HwRef id14 = hiwire_new_deduplicate(o1);
   ASSERT(id11 != id12);
-  ASSERT(id12 == id14);
+  ASSERT(id11 != id13);
+  ASSERT(id12 != id13);
+  ASSERT(id11 == id14);
   ASSERT(HEAP_REF_TO_INDEX(id11) == 1);
   ASSERT(HEAP_REF_TO_INDEX(id12) == 2);
   ASSERT(HEAP_REF_TO_INDEX(id13) == 3);
-  ASSERT(HEAP_REF_TO_INDEX(id14) == 2);
-  ASSERT(SLOT_REFCOUNT(id11) == 1);
-  ASSERT(SLOT_REFCOUNT(id12) == 2);
+  ASSERT(HEAP_REF_TO_INDEX(id14) == 1);
+  ASSERT(SLOT_REFCOUNT(id11) == 2);
+  ASSERT(SLOT_REFCOUNT(id12) == 1);
   ASSERT(SLOT_REFCOUNT(id13) == 1);
-  ASSERT(!SLOT_DEDUPLICATED(id11));
-  ASSERT(SLOT_DEDUPLICATED(id12));
+  ASSERT(SLOT_DEDUPLICATED(id11));
+  ASSERT(!SLOT_DEDUPLICATED(id12));
   ASSERT(!SLOT_DEDUPLICATED(id13));
 
   HwRef id21 = hiwire_new(o2);

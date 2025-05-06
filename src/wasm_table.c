@@ -18,7 +18,7 @@ _hiwire_immortal_add(__externref_t value)
   return __builtin_wasm_table_grow(_hiwire_immortal_table, value, 1);
 }
 
-void
+static void __attribute__((constructor))
 _hiwire_table_init(void)
 {
   __builtin_wasm_table_grow(_hiwire_table, __builtin_wasm_ref_null_extern(), 1);

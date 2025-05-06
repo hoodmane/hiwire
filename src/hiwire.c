@@ -46,10 +46,6 @@ HwRef
 hiwire_new(__externref_t value)
 {
   uint index = _hiwire.freeHead;
-  if (_hiwire.slotInfoSize == 0) {
-    _hiwire_table_init();
-    deduplicate_init();
-  }
   uint needed_size = sizeof(uint[index + 1]);
   uint orig_size = sizeof(uint[_hiwire.slotInfoSize]);
   if (needed_size > orig_size) {
